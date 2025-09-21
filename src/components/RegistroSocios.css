@@ -8,6 +8,7 @@
 .registro-container {
   max-width: 100%;
   min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for modern browsers */
   margin: 0;
   padding: 0.75rem;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
@@ -15,6 +16,8 @@
   flex-direction: column;
   background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
   box-sizing: border-box;
+  /* iOS Safari fix for viewport height changes */
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Minimal Sidebar Header */
@@ -61,6 +64,8 @@
   box-sizing: border-box;
   width: 100%;
   overflow: hidden;
+  max-height: calc(100vh - 15rem);
+  min-height: 60vh;
 }
 
 .progress-bar {
@@ -93,6 +98,8 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .step-content h3 {
@@ -375,6 +382,11 @@
   gap: 0.75rem;
   margin-top: auto;
   padding-top: 0.75rem;
+  flex-shrink: 0;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  position: sticky;
+  bottom: 0;
 }
 
 .btn-primary,
@@ -802,5 +814,36 @@
   .phone-numbers a {
     padding: 0.5rem 0.75rem;
     font-size: 0.85rem;
+  }
+}
+
+/* iOS Safari specific fixes for viewport height issues */
+@supports (-webkit-touch-callout: none) {
+  .registro-container {
+    min-height: -webkit-fill-available;
+    min-height: calc(var(--vh, 1vh) * 100);
+  }
+
+  .form-container {
+    max-height: calc(-webkit-fill-available - 15rem);
+    max-height: calc(var(--vh, 1vh) * 100 - 15rem);
+  }
+}
+
+/* Additional iOS Chrome fix for keyboard appearance */
+@media screen and (max-width: 640px) and (-webkit-min-device-pixel-ratio: 1) {
+  .registro-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0.75rem;
+    overflow: hidden;
+  }
+
+  .form-container {
+    height: calc(100% - 4rem);
+    max-height: none;
   }
 }

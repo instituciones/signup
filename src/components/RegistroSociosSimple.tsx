@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './RegistroSocios.css'
 
 export interface FormData {
@@ -51,6 +51,37 @@ export default function RegistroSociosSimple() {
     esSocio: false,
     pagoAnual: false
   })
+
+  // iOS viewport fix for keyboard issues
+  useEffect(() => {
+    const handleResize = () => {
+      // Force recalculation of viewport height on iOS
+      if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+        const vh = window.innerHeight * 0.01
+        document.documentElement.style.setProperty('--vh', `${vh}px`)
+
+        // Additional fix for iOS Chrome
+        setTimeout(() => {
+          window.scrollTo(0, 0)
+          document.body.scrollTop = 0
+          document.documentElement.scrollTop = 0
+        }, 100)
+      }
+    }
+
+    // Set initial viewport height
+    handleResize()
+
+    // Listen for viewport changes
+    window.addEventListener('resize', handleResize)
+    window.addEventListener('orientationchange', handleResize)
+
+    // Clean up
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      window.removeEventListener('orientationchange', handleResize)
+    }
+  }, [])
 
   const updateFormData = (data: Partial<FormData>) => {
     setFormData(prev => ({ ...prev, ...data }))
@@ -190,7 +221,6 @@ export default function RegistroSociosSimple() {
       case 0:
         return (
           <div className="step-content">
-            <h3>Datos Personales</h3>
             <div className="form-group">
               <label>Nombre *</label>
               <input
@@ -245,7 +275,6 @@ export default function RegistroSociosSimple() {
       case 1:
         return (
           <div className="step-content">
-            <h3>Contacto</h3>
             <div className="form-row">
               <div className="form-group">
                 <label>Código de Área *</label>
@@ -288,7 +317,6 @@ export default function RegistroSociosSimple() {
       case 2:
         return (
           <div className="step-content">
-            <h3>Estado de Socio</h3>
             <div className="form-group checkbox-group">
               <label className="checkbox-label">
                 <input
@@ -326,7 +354,6 @@ export default function RegistroSociosSimple() {
       case 3:
         return (
           <div className="step-content">
-            <h3>Cargar Foto de Perfil</h3>
             <div className="form-group full-width">
               <div className="upload-area">
               <input
@@ -368,7 +395,6 @@ export default function RegistroSociosSimple() {
       case 4:
         return (
           <div className="step-content">
-            <h3>Selecciona tu Plan</h3>
             <div className="form-group">
               <label>Plan *</label>
               <select
@@ -535,16 +561,18 @@ export default function RegistroSociosSimple() {
         {renderStep()}
 
         <div className="navigation">
-          <button
-            onClick={prevStep}
-            disabled={currentStep === 0}
-            className="btn-secondary"
-          >
-            Anterior
-          </button>
+          {currentStep > 0 && (
+            <button
+              onClick={prevStep}
+              className="btn-secondary"
+            >
+              Anterior
+            </button>
+          )}
           <button
             onClick={nextStep}
             className="btn-primary"
+            style={currentStep === 0 ? { width: '100%' } : {}}
           >
             {currentStep === STEPS.length - 1 ? 'Finalizar' : 'Siguiente'}
           </button>

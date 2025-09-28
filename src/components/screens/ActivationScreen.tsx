@@ -3,11 +3,13 @@ import React from 'react'
 interface ActivationScreenProps {
   onBack: () => void
   onFinish: () => void
+  onNewRegistration?: () => void
 }
 
 export const ActivationScreen: React.FC<ActivationScreenProps> = ({
   onBack,
-  onFinish
+  onFinish,
+  onNewRegistration
 }) => {
   return (
     <div className="registro-container">
@@ -33,6 +35,18 @@ export const ActivationScreen: React.FC<ActivationScreenProps> = ({
             ✅ Finalizar
           </button>
         </div>
+
+        {onNewRegistration && (
+          <div style={{ marginTop: '15px', textAlign: 'center' }}>
+            <button
+              className="btn-secondary"
+              onClick={onNewRegistration}
+              style={{ width: '100%' }}
+            >
+              📝 Nuevo Registro
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

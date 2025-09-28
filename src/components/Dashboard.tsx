@@ -24,20 +24,25 @@ export default function Dashboard() {
   const [currentStep, setCurrentStep] = useState(0)
   const [showTransfer, setShowTransfer] = useState(false)
   const [showActivation, setShowActivation] = useState(false)
-  const [formData, setFormData] = useState<FormData>({
-    firstName: '',
-    lastName: '',
-    documentType: '',
-    documentNumber: '',
-    phoneArea: '264',
-    phoneNumber: '',
-    email: '',
-    isMember: false,
-    hasDebt: false,
-    installments: 1,
-    annualPayment: false,
-    institutionId: '219f36ed-d8ac-4754-9384-d9f181dbfa94',
-    status: 'pending'
+  const [formData, setFormData] = useState<FormData>(() => {
+    const initialData: FormData = {
+      firstName: '',
+      lastName: '',
+      documentType: '',
+      documentNumber: '',
+      phoneArea: '264',
+      phoneNumber: '',
+      email: '',
+      isMember: false,
+      hasDebt: false,
+      installments: 1,
+      annualPayment: false,
+      institutionId: '219f36ed-d8ac-4754-9384-d9f181dbfa94',
+      status: 'pending' as 'pending'
+    }
+    console.log('🔥 INITIAL FORM DATA:', initialData)
+    console.log('🔥 INITIAL installments:', initialData.installments, typeof initialData.installments)
+    return initialData
   })
 
   // Custom hooks
@@ -72,32 +77,127 @@ export default function Dashboard() {
   }, [])
 
   const updateFormData = (data: Partial<FormData>) => {
-    setFormData(prev => ({ ...prev, ...data }))
+    console.log('=== updateFormData called ===')
+    console.log('Data recibida:', data)
+    console.log('FormData actual antes del update:', formData)
+
+    // Verificar específicamente installments
+    if ('installments' in data) {
+      console.log('🔍 INSTALLMENTS UPDATE:')
+      console.log('  Valor anterior:', formData.installments, typeof formData.installments)
+      console.log('  Valor nuevo:', data.installments, typeof data.installments)
+      console.log('  Es NaN el nuevo valor?', isNaN(data.installments as number))
+    }
+
+    setFormData(prev => {
+      const newFormData = { ...prev, ...data }
+      console.log('FormData después del update:', newFormData)
+
+      // Verificar installments después del update
+      if ('installments' in data) {
+        console.log('🔍 INSTALLMENTS DESPUÉS DEL UPDATE:')
+        console.log('  newFormData.installments:', newFormData.installments, typeof newFormData.installments)
+      }
+
+      return newFormData
+    })
+
     // Clear errors when user starts typing
     clearErrors(Object.keys(data))
   }
 
   const calcularPrecioFinal = (): number => {
+    console.log('=== calcularPrecioFinal DEBUG ===')
+    console.log('formData.selectedPlan:', formData.selectedPlan)
+    console.log('formData.installments:', formData.installments, typeof formData.installments)
+    console.log('formData.hasDebt:', formData.hasDebt, typeof formData.hasDebt)
+    console.log('PLANES:', PLANES)
+
     const plan = PLANES.find(p => p.id === formData.selectedPlan)
-    if (!plan) return 0
+    console.log('Plan encontrado:', plan)
+
+    if (!plan) {
+      console.log('No se encontró plan, retornando 0')
+      return 0
+    }
+
+    // Validar que plan.price sea un número válido
+    if (typeof plan.price !== 'number' || isNaN(plan.price)) {
+      console.error('plan.price no es un número válido:', plan.price)
+      return 0
+    }
+
+    // Validar que installments sea un número válido
+    const installments = Number(formData.installments)
+    if (isNaN(installments) || installments < 1) {
+      console.error('installments no es válido:', formData.installments, 'convertido a:', installments)
+      return 0
+    }
 
     let total = 0
 
     // Calcular el total basado en la cantidad de cuotas
-    if (formData.installments === 12) {
+    if (installments === 12) {
       // 12 cuotas = 10 cuotas pagadas (descuento de 2 cuotas)
       total = plan.price * 10
+      console.log('Cálculo 12 cuotas:', plan.price, '* 10 =', total)
     } else {
       // Para cualquier otra cantidad de cuotas, se paga el precio completo por cada cuota
-      total = plan.price * formData.installments
+      total = plan.price * installments
+      console.log('Cálculo cuotas normales:', plan.price, '*', installments, '=', total)
     }
 
     // Si tiene deuda, agregar cuota de reinscripción
-    if (formData.hasDebt) {
+    if (formData.hasDebt === true) {
       total += plan.price
+      console.log('Agregando cuota de reinscripción:', plan.price, 'Total con deuda:', total)
+    }
+
+    console.log('Total final:', total)
+    console.log('=== FIN DEBUG ===')
+
+    // Validar que el total sea un número válido antes de retornar
+    if (isNaN(total) || !isFinite(total)) {
+      console.error('Total calculado no es válido:', total)
+      return 0
     }
 
     return total
+  }
+
+  // Wrapper seguro para usar en componentes
+  const calcularPrecioFinalSeguro = (): number => {
+    try {
+      const precio = calcularPrecioFinal()
+      return isNaN(precio) ? 0 : precio
+    } catch (error) {
+      console.error('Error en calcularPrecioFinal:', error)
+      return 0
+    }
+  }
+
+  const resetForm = () => {
+    console.log('🔄 Reseteando formulario...')
+    const freshFormData: FormData = {
+      firstName: '',
+      lastName: '',
+      documentType: '',
+      documentNumber: '',
+      phoneArea: '264',
+      phoneNumber: '',
+      email: '',
+      isMember: false,
+      hasDebt: false,
+      installments: 1,
+      annualPayment: false,
+      institutionId: '219f36ed-d8ac-4754-9384-d9f181dbfa94',
+      status: 'pending' as 'pending'
+    }
+    setFormData(freshFormData)
+    setCurrentStep(0)
+    setShowTransfer(false)
+    setShowActivation(false)
+    console.log('✅ Formulario reseteado')
   }
 
   const handleFileUpload = async (file: File) => {
@@ -171,11 +271,8 @@ export default function Dashboard() {
     window.open('https://mpago.la/2B558cv', '_blank')
   }
 
-  const handleFormSubmit = async (captchaToken: string) => {
+  const handleFormSubmit = async () => {
     try {
-      // TODO: Implement final submission logic if needed
-      // const result = await submitRegistration(formData, captchaToken)
-
       // For now, just show transfer screen
       alert('¡Registro completado! Procede con el pago.')
       setShowTransfer(true)
@@ -189,7 +286,11 @@ export default function Dashboard() {
     return (
       <ActivationScreen
         onBack={() => setShowActivation(false)}
-        onFinish={() => alert('¡Registro completado! Realizá la transferencia para activar tu membresía.')}
+        onFinish={() => {
+          alert('¡Registro completado! Realizá la transferencia para activar tu membresía.')
+          resetForm()
+        }}
+        onNewRegistration={resetForm}
       />
     )
   }
@@ -198,9 +299,10 @@ export default function Dashboard() {
     return (
       <TransferScreen
         formData={formData}
-        calcularPrecioFinal={calcularPrecioFinal}
+        calcularPrecioFinal={calcularPrecioFinalSeguro}
         onPayWithMercadoPago={handlePayWithMercadoPago}
         onShowActivation={() => setShowActivation(true)}
+        onNewRegistration={resetForm}
       />
     )
   }
@@ -246,7 +348,7 @@ export default function Dashboard() {
             formData={formData}
             updateFormData={updateFormData}
             errors={errors}
-            calcularPrecioFinal={calcularPrecioFinal}
+            calcularPrecioFinal={calcularPrecioFinalSeguro}
             onFormSubmit={handleFormSubmit}
           />
         )

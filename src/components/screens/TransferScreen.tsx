@@ -7,13 +7,15 @@ interface TransferScreenProps {
   calcularPrecioFinal: () => number
   onPayWithMercadoPago: () => void
   onShowActivation: () => void
+  onNewRegistration?: () => void
 }
 
 export const TransferScreen: React.FC<TransferScreenProps> = ({
   formData,
   calcularPrecioFinal,
   onPayWithMercadoPago,
-  onShowActivation
+  onShowActivation,
+  onNewRegistration
 }) => {
   return (
     <div className="registro-container">
@@ -41,9 +43,21 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
           </div>
         </div>
 
-        <button className="btn-primary" onClick={onShowActivation}>
-          📋 Ya pagué (instrucciones de activación)
-        </button>
+        <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
+          <button className="btn-primary" onClick={onShowActivation}>
+            📋 Ya pagué (instrucciones de activación)
+          </button>
+
+          {onNewRegistration && (
+            <button
+              className="btn-secondary"
+              onClick={onNewRegistration}
+              style={{ marginTop: '10px' }}
+            >
+              📝 Nuevo Registro
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )

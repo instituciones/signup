@@ -1,15 +1,14 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { FormData } from '../../types/FormData'
 import { PLANES } from '../../types/constants'
 import { FormField, FormSelect } from '../shared/FormField'
-import { Captcha } from '../shared/Captcha'
 
 interface PaymentStepProps {
   formData: FormData
   updateFormData: (data: Partial<FormData>) => void
   errors: Record<string, string>
   calcularPrecioFinal: () => number
-  onFormSubmit?: (captchaToken: string) => void
+  onFormSubmit?: () => void
 }
 
 export const PaymentStep: React.FC<PaymentStepProps> = ({
@@ -19,11 +18,15 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
   calcularPrecioFinal,
   onFormSubmit
 }) => {
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
-  const [showCaptcha, setShowCaptcha] = useState(false)
+
+  // Verificar installments en cada render
+  console.log('🔍 PaymentStep render - installments:', formData.installments, typeof formData.installments)
+  if (isNaN(formData.installments) || typeof formData.installments !== 'number') {
+    console.error('❌ INSTALLMENTS NO ES VÁLIDO EN PAYMENTSTEP:', formData.installments)
+  }
 
   const onSubmit = () => {
-    onFormSubmit && captchaToken && onFormSubmit(captchaToken)
+    onFormSubmit && onFormSubmit()
   }
 
   return (
@@ -42,17 +45,27 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
         <FormSelect
           value={formData.installments.toString()}
           onChange={(value) => {
+            console.log('=== PaymentStep installments onChange ===')
+            console.log('Valor recibido:', value, typeof value)
+            console.log('formData.installments actual:', formData.installments, typeof formData.installments)
+
             const cuotas = parseInt(value)
+            console.log('parseInt(value):', cuotas, typeof cuotas, 'isNaN:', isNaN(cuotas))
+
             const updates: Partial<FormData> = { installments: cuotas }
+            console.log('Updates que se van a aplicar:', updates)
 
             // Si eligen 12 cuotas, marcar annualPayment como true
             // Si eligen 1-11 cuotas, marcar annualPayment como false
             if (cuotas === 12) {
               updates.annualPayment = true
+              console.log('12 cuotas seleccionadas, annualPayment = true')
             } else {
               updates.annualPayment = false
+              console.log(`${cuotas} cuotas seleccionadas, annualPayment = false`)
             }
 
+            console.log('Llamando updateFormData con:', updates)
             updateFormData(updates)
           }}
           options={Array.from({ length: 12 }, (_, i) => {
@@ -81,27 +94,6 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
               ¡Ahorrás ${(PLANES.find(p => p.id === formData.selectedPlan)?.price || 0) * 2}!
             </p>
           )}
-
-          {/* <Captcha
-            onVerify={(token) => {
-              setCaptchaToken(token)
-              setShowCaptcha(false)
-              onSubmit()
-            }}
-            onError={() => {
-              setCaptchaToken(null)
-              alert('Error en la verificación. Por favor, inténtalo de nuevo.')
-            }}
-            onExpire={() => {
-              setCaptchaToken(null)
-              alert('La verificación ha expirado. Por favor, inténtalo de nuevo.')
-            }}
-          />
-          {captchaToken && (
-            <div className="captcha-success">
-              ✅ Verificación completada. Enviando información...
-            </div>
-          )} */}
         </div>
       )}
     </div>

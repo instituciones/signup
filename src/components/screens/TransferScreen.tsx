@@ -23,31 +23,26 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
         <div className="instructions">
           <div className="payment-methods">
             <div className="method-option">
-              <h5>💳 Opción 1: Pago Directo</h5>
+              <h5>💳 Registro guardado</h5>
               <div className="mercadopago-button-container">
-                <button
-                  className="btn-mercadopago"
-                  onClick={onPayWithMercadoPago}
-                >
-                  💳 Pagar con MercadoPago
-                </button>
+                <p>Tus datos fueron guardados, quedamos a la espera de tu transferencia para completar el proceso.</p>
               </div>
             </div>
             <div className="method-option">
-              <h5>🔄 Opción 2: Transferencia Manual</h5>
+              <h5>🔄 Transferencia</h5>
               <ol>
-                <li>🔵 Abrí MercadoPago en tu celular</li>
+                <li>🔵 Abrí tu cuenta en tu celular</li>
                 <li>💸 Seleccioná "Transferir dinero"</li>
                 <li>🎯 Ingresá el alias: <strong>clubalianza.mp</strong></li>
                 <li>💰 Transferí: <strong>${calcularPrecioFinal().toLocaleString()}</strong></li>
-                <li>✍️ En concepto escribí: "{formData.nombre} {formData.apellido} - {PLANES.find(p => p.id === formData.planSeleccionado)?.nombre}"</li>
+                <li>✍️ En concepto escribí: "{formData.firstName} {formData.lastName} - {PLANES.find(p => p.id === formData.selectedPlan)?.name}"</li>
               </ol>
             </div>
           </div>
         </div>
 
         <button className="btn-primary" onClick={onShowActivation}>
-          📋 Ver instrucciones de activación
+          📋 Ya pagué (instrucciones de activación)
         </button>
       </div>
     </div>

@@ -55,7 +55,7 @@ export const FormInput: React.FC<FormInputProps> = ({
 interface FormSelectProps {
   value: string
   onChange: (value: string) => void
-  options: { value: string; label: string }[]
+  options: { value: string; label: string; disabled?: boolean }[]
   placeholder?: string
   error?: boolean
 }
@@ -75,7 +75,7 @@ export const FormSelect: React.FC<FormSelectProps> = ({
     >
       <option value="">{placeholder}</option>
       {options.map((option) => (
-        <option key={option.value} value={option.value}>
+        <option key={option.value} value={option.value} disabled={option.disabled}>
           {option.label}
         </option>
       ))}

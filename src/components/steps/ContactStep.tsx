@@ -16,21 +16,21 @@ export const ContactStep: React.FC<ContactStepProps> = ({
   return (
     <div className="step-content">
       <div className="form-row">
-        <FormField label="Código de Área" required error={errors.codigoArea}>
+        <FormField label="Código de Área" required error={errors.areaCode}>
           <FormInput
-            value={formData.codigoArea}
-            onChange={(value) => updateFormData({ codigoArea: value })}
+            value={formData.areaCode}
+            onChange={(value) => updateFormData({ areaCode: value })}
             placeholder="011"
-            error={!!errors.codigoArea}
+            error={!!errors.areaCode}
           />
         </FormField>
 
-        <FormField label="Teléfono" required error={errors.telefono}>
+        <FormField label="Teléfono" required error={errors.phoneNumber}>
           <FormInput
-            value={formData.telefono}
-            onChange={(value) => updateFormData({ telefono: value })}
+            value={formData.phoneNumber}
+            onChange={(value) => updateFormData({ phoneNumber: value })}
             placeholder="12345678"
-            error={!!errors.telefono}
+            error={!!errors.phoneNumber}
           />
         </FormField>
       </div>

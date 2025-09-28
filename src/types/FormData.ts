@@ -1,20 +1,22 @@
 export interface FormData {
-  nombre: string
-  apellido: string
-  tipoDocumento: string
-  documento: string
-  codigoArea: string
-  telefono: string
+  firstName: string
+  lastName: string
+  documentType: string
+  documentNumber: string
+  areaCode: string
+  phoneNumber: string
   email: string
-  esSocio: boolean
-  numeroSocio?: string
-  planSeleccionado?: string
-  pagoAnual: boolean
-  fotoUrl?: string
+  isMember: boolean
+  memberNumber?: string
+  hasDebt: boolean
+  selectedPlan?: string
+  installments: number
+  annualPayment: boolean
+  photoUrl?: string
 }
 
 export interface Plan {
   id: string
-  nombre: string
-  precio: number
+  name: string
+  price: number
 }

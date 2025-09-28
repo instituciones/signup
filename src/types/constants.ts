@@ -14,8 +14,9 @@ export const TIPOS_DOCUMENTO = [
 ]
 
 export const PLANES: Plan[] = [
-  { id: 'platea', nombre: 'Platea', precio: 15000 },
-  { id: 'jugador', nombre: 'Jugador o Padre/Tutor', precio: 10000 },
-  { id: 'jubilado', nombre: 'Jubilado', precio: 10000 },
-  { id: 'juvenil', nombre: 'Juvenil', precio: 10000 }
+  { id: 'popular', name: 'Popular', price: 12000 },
+  { id: 'platea', name: 'Platea', price: 15000 },
+  { id: 'jugador', name: 'Jugador o Padre/Tutor', price: 10000 },
+  { id: 'jubilado', name: 'Jubilado', price: 10000 },
+  { id: 'juvenil', name: 'Juvenil', price: 10000 }
 ]

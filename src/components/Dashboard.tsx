@@ -3,6 +3,7 @@ import { FormData } from '../types/FormData'
 import { STEPS, PLANES } from '../types/constants'
 import { useFormValidation } from '../hooks/useFormValidation'
 import { useCloudinaryUpload } from '../hooks/useCloudinaryUpload'
+import { useRegistrationSubmit } from '../hooks/useRegistrationSubmit'
 
 // Components
 import { ProgressBar } from './shared/ProgressBar'
@@ -22,21 +23,25 @@ export default function Dashboard() {
   const [currentStep, setCurrentStep] = useState(0)
   const [showTransfer, setShowTransfer] = useState(false)
   const [showActivation, setShowActivation] = useState(false)
+  const [captchaCompleted, setCaptchaCompleted] = useState(false)
   const [formData, setFormData] = useState<FormData>({
-    nombre: '',
-    apellido: '',
-    tipoDocumento: '',
-    documento: '',
-    codigoArea: '264',
-    telefono: '',
+    firstName: '',
+    lastName: '',
+    documentType: '',
+    documentNumber: '',
+    areaCode: '264',
+    phoneNumber: '',
     email: '',
-    esSocio: false,
-    pagoAnual: false
+    isMember: false,
+    hasDebt: false,
+    installments: 1,
+    annualPayment: false
   })
 
   // Custom hooks
   const { errors, validateStep, clearErrors } = useFormValidation()
   const { uploadToCloudinary, uploadProgress, isUploading } = useCloudinaryUpload()
+  const { isSubmitting, submitError, submitSuccess, submitRegistration } = useRegistrationSubmit()
 
   // iOS viewport fix for keyboard issues
   useEffect(() => {
@@ -70,15 +75,32 @@ export default function Dashboard() {
   }
 
   const calcularPrecioFinal = (): number => {
-    const plan = PLANES.find(p => p.id === formData.planSeleccionado)
+    const plan = PLANES.find(p => p.id === formData.selectedPlan)
     if (!plan) return 0
-    return formData.pagoAnual ? plan.precio * 10 : plan.precio
+
+    let total = 0
+
+    // Calcular el total basado en la cantidad de cuotas
+    if (formData.installments === 12) {
+      // 12 cuotas = 10 cuotas pagadas (descuento de 2 cuotas)
+      total = plan.price * 10
+    } else {
+      // Para cualquier otra cantidad de cuotas, se paga el precio completo por cada cuota
+      total = plan.price * formData.installments
+    }
+
+    // Si tiene deuda, agregar cuota de reinscripción
+    if (formData.hasDebt) {
+      total += plan.price
+    }
+
+    return total
   }
 
   const handleFileUpload = async (file: File) => {
     try {
       const result = await uploadToCloudinary(file)
-      updateFormData({ fotoUrl: result.url })
+      updateFormData({ photoUrl: result.url })
     } catch (error) {
       console.error('Error uploading file:', error)
       alert('Error al subir la imagen. Por favor, inténtalo de nuevo.')
@@ -91,7 +113,13 @@ export default function Dashboard() {
         setCurrentStep(currentStep + 1)
       }
     } else {
-      // Final step - show transfer screen
+      // Final step - validar que el plan esté seleccionado y el captcha completado
+      if (!formData.selectedPlan) {
+        alert('Por favor, selecciona un plan antes de continuar.')
+        return
+      }
+
+      // Show transfer screen
       setShowTransfer(true)
     }
   }
@@ -104,6 +132,29 @@ export default function Dashboard() {
 
   const handlePayWithMercadoPago = () => {
     window.open('https://mpago.la/2B558cv', '_blank')
+  }
+
+  const handleFormSubmit = async (captchaToken: string) => {
+    try {
+      // Marcar captcha como completado
+      setCaptchaCompleted(true)
+
+      const result = await submitRegistration(formData, captchaToken)
+
+      if (result.success) {
+        // Mostrar mensaje de éxito y continuar al paso de transferencia
+        alert('¡Registro enviado exitosamente! Ahora procede con el pago.')
+        setShowTransfer(true)
+      } else {
+        // Mostrar error y resetear captcha
+        setCaptchaCompleted(false)
+        alert(`Error al enviar el registro: ${result.error}`)
+      }
+    } catch (error) {
+      // Resetear captcha en caso de error
+      setCaptchaCompleted(false)
+      alert('Error inesperado al enviar el registro. Por favor, inténtalo de nuevo.')
+    }
   }
 
   // Transfer screen
@@ -169,6 +220,7 @@ export default function Dashboard() {
             updateFormData={updateFormData}
             errors={errors}
             calcularPrecioFinal={calcularPrecioFinal}
+            onFormSubmit={handleFormSubmit}
           />
         )
       default:

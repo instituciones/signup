@@ -19,34 +19,43 @@ export const MembershipStep: React.FC<MembershipStepProps> = ({
         <label className="checkbox-label">
           <input
             type="checkbox"
-            checked={formData.esSocio}
-            onChange={(e) => updateFormData({ esSocio: e.target.checked })}
+            checked={formData.isMember}
+            onChange={(e) => updateFormData({ isMember: e.target.checked })}
           />
           ¿Fuiste socio?
         </label>
       </div>
 
-      {formData.esSocio && (
+      {formData.isMember && (
         <>
-          <FormField label="Número de Socio" error={errors.numeroSocio}>
+          <FormField label="Número de Socio" error={errors.memberNumber}>
             <FormInput
-              value={formData.numeroSocio || ''}
-              onChange={(value) => updateFormData({ numeroSocio: value })}
-              placeholder="Número de socio (opcional)"
-              error={!!errors.numeroSocio}
+              value={formData.memberNumber || ''}
+              onChange={(value) => updateFormData({ memberNumber: value })}
+              placeholder="(opcional)"
+              error={!!errors.memberNumber}
             />
           </FormField>
-
-          <div className="amnesty-message">
-            <h4>🎉 ¡Adhesión a la Amnistía 2024!</h4>
-            <p>
-              Como ex-socio, podés adherir a nuestra <strong>Amnistía 2024</strong>:
-            </p>
-            <p>• Condonación total de deudas anteriores</p>
-            <p>• Reactivación inmediata de beneficios</p>
-            <p>• <strong>¡Comenzá de nuevo sin compromisos pendientes!</strong></p>
-          </div>
         </>
+      )}
+
+      <div className="form-group checkbox-group">
+        <label className="checkbox-label">
+          <input
+            type="checkbox"
+            checked={formData.hasDebt}
+            onChange={(e) => updateFormData({ hasDebt: e.target.checked })}
+          />
+          ¿Tienes deuda?
+        </label>
+      </div>
+      {formData.hasDebt && (
+        <div className="amnesty-message">
+          <h4>🎉 ¡Adhesión a la Amnistía 2025!</h4>
+          <p>• Condonación total de deudas anteriores</p>
+          <p>• Reactivación inmediata de beneficios</p>
+          <p>Deberas abonar la cuota actual + una cuota de reinscripcion.</p>
+        </div>
       )}
     </div>
   )

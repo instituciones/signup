@@ -9,25 +9,25 @@ export const useFormValidation = () => {
 
     switch (step) {
       case 0:
-        if (!formData.nombre.trim()) newErrors.nombre = 'El nombre es requerido'
-        if (!formData.apellido.trim()) newErrors.apellido = 'El apellido es requerido'
-        if (!formData.tipoDocumento) newErrors.tipoDocumento = 'Seleccione un tipo de documento'
-        if (!formData.documento.trim()) newErrors.documento = 'El número de documento es requerido'
-        else if (!/^\d+$/.test(formData.documento)) newErrors.documento = 'Solo se permiten números'
+        if (!formData.firstName.trim()) newErrors.firstName = 'El nombre es requerido'
+        if (!formData.lastName.trim()) newErrors.lastName = 'El apellido es requerido'
+        if (!formData.documentType) newErrors.documentType = 'Seleccione un tipo de documento'
+        if (!formData.documentNumber.trim()) newErrors.documentNumber = 'El número de documento es requerido'
+        else if (!/^\d+$/.test(formData.documentNumber)) newErrors.documentNumber = 'Solo se permiten números'
         break
 
       case 1:
-        if (!formData.codigoArea.trim()) newErrors.codigoArea = 'El código de área es requerido'
-        else if (!/^\d+$/.test(formData.codigoArea)) newErrors.codigoArea = 'Solo se permiten números'
-        if (!formData.telefono.trim()) newErrors.telefono = 'El teléfono es requerido'
-        else if (!/^\d+$/.test(formData.telefono)) newErrors.telefono = 'Solo se permiten números'
+        if (!formData.areaCode.trim()) newErrors.areaCode = 'El código de área es requerido'
+        else if (!/^\d+$/.test(formData.areaCode)) newErrors.areaCode = 'Solo se permiten números'
+        if (!formData.phoneNumber.trim()) newErrors.phoneNumber = 'El teléfono es requerido'
+        else if (!/^\d+$/.test(formData.phoneNumber)) newErrors.phoneNumber = 'Solo se permiten números'
         if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
           newErrors.email = 'Email inválido'
         }
         break
 
       case 4:
-        if (!formData.planSeleccionado) newErrors.planSeleccionado = 'Debe seleccionar un plan'
+        if (!formData.selectedPlan) newErrors.selectedPlan = 'Debe seleccionar un plan'
         break
     }
 

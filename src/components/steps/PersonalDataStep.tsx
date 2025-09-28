@@ -16,40 +16,40 @@ export const PersonalDataStep: React.FC<PersonalDataStepProps> = ({
 }) => {
   return (
     <div className="step-content">
-      <FormField label="Nombre" required error={errors.nombre}>
+      <FormField label="Nombre" required error={errors.firstName}>
         <FormInput
-          value={formData.nombre}
-          onChange={(value) => updateFormData({ nombre: value })}
+          value={formData.firstName}
+          onChange={(value) => updateFormData({ firstName: value })}
           placeholder="Nombre"
-          error={!!errors.nombre}
+          error={!!errors.firstName}
         />
       </FormField>
 
-      <FormField label="Apellido" required error={errors.apellido}>
+      <FormField label="Apellido" required error={errors.lastName}>
         <FormInput
-          value={formData.apellido}
-          onChange={(value) => updateFormData({ apellido: value })}
+          value={formData.lastName}
+          onChange={(value) => updateFormData({ lastName: value })}
           placeholder="Apellido"
-          error={!!errors.apellido}
+          error={!!errors.lastName}
         />
       </FormField>
 
-      <FormField label="Tipo" required error={errors.tipoDocumento}>
+      <FormField label="Tipo" required error={errors.documentType}>
         <FormSelect
-          value={formData.tipoDocumento}
-          onChange={(value) => updateFormData({ tipoDocumento: value })}
+          value={formData.documentType}
+          onChange={(value) => updateFormData({ documentType: value })}
           options={TIPOS_DOCUMENTO}
           placeholder="Tipo de documento"
-          error={!!errors.tipoDocumento}
+          error={!!errors.documentType}
         />
       </FormField>
 
-      <FormField label="Número" required error={errors.documento}>
+      <FormField label="Número" required error={errors.documentNumber}>
         <FormInput
-          value={formData.documento}
-          onChange={(value) => updateFormData({ documento: value })}
+          value={formData.documentNumber}
+          onChange={(value) => updateFormData({ documentNumber: value })}
           placeholder="Número de documento"
-          error={!!errors.documento}
+          error={!!errors.documentNumber}
         />
       </FormField>
     </div>

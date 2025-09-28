@@ -847,3 +847,44 @@
     max-height: none;
   }
 }
+
+/* Captcha Styles */
+.captcha-section {
+  margin-top: 30px;
+  padding: 20px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  text-align: center;
+}
+
+.captcha-section h4 {
+  color: #1f2937;
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.captcha-section p {
+  color: #6b7280;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.captcha-container {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+}
+
+.captcha-success {
+  margin-top: 16px;
+  padding: 12px;
+  background: #d1fae5;
+  color: #065f46;
+  border-radius: 8px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}

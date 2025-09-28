@@ -17,8 +17,8 @@ export const useFormValidation = () => {
         break
 
       case 1:
-        if (!formData.areaCode.trim()) newErrors.areaCode = 'El código de área es requerido'
-        else if (!/^\d+$/.test(formData.areaCode)) newErrors.areaCode = 'Solo se permiten números'
+        if (!formData.phoneArea.trim()) newErrors.phoneArea = 'El código de área es requerido'
+        else if (!/^\d+$/.test(formData.phoneArea)) newErrors.phoneArea = 'Solo se permiten números'
         if (!formData.phoneNumber.trim()) newErrors.phoneNumber = 'El teléfono es requerido'
         else if (!/^\d+$/.test(formData.phoneNumber)) newErrors.phoneNumber = 'Solo se permiten números'
         if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {

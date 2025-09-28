@@ -4,6 +4,7 @@ import { STEPS, PLANES } from '../types/constants'
 import { useFormValidation } from '../hooks/useFormValidation'
 import { useCloudinaryUpload } from '../hooks/useCloudinaryUpload'
 import { useRegistrationSubmit } from '../hooks/useRegistrationSubmit'
+import { useCreateProvisionalRecord } from '../hooks/useCreateProvisionalRecord'
 
 // Components
 import { ProgressBar } from './shared/ProgressBar'
@@ -23,25 +24,27 @@ export default function Dashboard() {
   const [currentStep, setCurrentStep] = useState(0)
   const [showTransfer, setShowTransfer] = useState(false)
   const [showActivation, setShowActivation] = useState(false)
-  const [captchaCompleted, setCaptchaCompleted] = useState(false)
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
     lastName: '',
     documentType: '',
     documentNumber: '',
-    areaCode: '264',
+    phoneArea: '264',
     phoneNumber: '',
     email: '',
     isMember: false,
     hasDebt: false,
     installments: 1,
-    annualPayment: false
+    annualPayment: false,
+    institutionId: '219f36ed-d8ac-4754-9384-d9f181dbfa94',
+    status: 'pending'
   })
 
   // Custom hooks
   const { errors, validateStep, clearErrors } = useFormValidation()
   const { uploadToCloudinary, uploadProgress, isUploading } = useCloudinaryUpload()
-  const { isSubmitting, submitError, submitSuccess, submitRegistration } = useRegistrationSubmit()
+  // const { isSubmitting, submitError, submitSuccess, submitRegistration } = useRegistrationSubmit()
+  const { isCreating, createError, provisionalRecord, createProvisionalRecord } = useCreateProvisionalRecord()
 
   // iOS viewport fix for keyboard issues
   useEffect(() => {
@@ -107,20 +110,54 @@ export default function Dashboard() {
     }
   }
 
-  const nextStep = () => {
+  const nextStep = async () => {
+    console.log('nextStep called, currentStep:', currentStep)
+    console.log('Total steps:', STEPS.length)
+
     if (currentStep < STEPS.length - 1) {
-      if (validateStep(currentStep, formData)) {
+      console.log('Validating step:', currentStep, 'with formData:', formData)
+      const isValid = validateStep(currentStep, formData)
+      console.log('Validation result:', isValid)
+
+      if (isValid) {
+        console.log('Validation passed, proceeding...')
+
+
         setCurrentStep(currentStep + 1)
+      } else {
+        console.log('Validation failed, errors:', errors)
       }
     } else {
-      // Final step - validar que el plan esté seleccionado y el captcha completado
+      // Final step (step 4) - crear registro provisional y mostrar transfer screen
+      console.log('En step final (4), creando registro provisional...')
+
       if (!formData.selectedPlan) {
         alert('Por favor, selecciona un plan antes de continuar.')
         return
       }
 
-      // Show transfer screen
-      setShowTransfer(true)
+      console.log('Iniciando creación de registro provisional...')
+      console.log('FormData completo:', formData)
+
+      try {
+        const result = await createProvisionalRecord(formData)
+        console.log('Resultado de createProvisionalRecord:', result)
+
+        if (!result.success) {
+          alert(`Error al crear el registro: ${result.error}`)
+          return
+        }
+
+        console.log('Registro provisional creado exitosamente:', result.record)
+
+        // Show transfer screen después de crear el registro
+        setShowTransfer(true)
+
+      } catch (error) {
+        console.error('Error en createProvisionalRecord:', error)
+        alert('Error al crear el registro provisional. Por favor, inténtalo de nuevo.')
+        return
+      }
     }
   }
 
@@ -136,23 +173,13 @@ export default function Dashboard() {
 
   const handleFormSubmit = async (captchaToken: string) => {
     try {
-      // Marcar captcha como completado
-      setCaptchaCompleted(true)
+      // TODO: Implement final submission logic if needed
+      // const result = await submitRegistration(formData, captchaToken)
 
-      const result = await submitRegistration(formData, captchaToken)
-
-      if (result.success) {
-        // Mostrar mensaje de éxito y continuar al paso de transferencia
-        alert('¡Registro enviado exitosamente! Ahora procede con el pago.')
-        setShowTransfer(true)
-      } else {
-        // Mostrar error y resetear captcha
-        setCaptchaCompleted(false)
-        alert(`Error al enviar el registro: ${result.error}`)
-      }
+      // For now, just show transfer screen
+      alert('¡Registro completado! Procede con el pago.')
+      setShowTransfer(true)
     } catch (error) {
-      // Resetear captcha en caso de error
-      setCaptchaCompleted(false)
       alert('Error inesperado al enviar el registro. Por favor, inténtalo de nuevo.')
     }
   }
@@ -256,6 +283,7 @@ export default function Dashboard() {
           totalSteps={STEPS.length}
           onPrevious={prevStep}
           onNext={nextStep}
+          isLoading={isCreating}
         />
       </div>
     </div>

@@ -5,13 +5,15 @@ interface NavigationProps {
   totalSteps: number
   onPrevious: () => void
   onNext: () => void
+  isLoading?: boolean
 }
 
 export const Navigation: React.FC<NavigationProps> = ({
   currentStep,
   totalSteps,
   onPrevious,
-  onNext
+  onNext,
+  isLoading = false
 }) => {
   return (
     <div className="navigation">
@@ -27,8 +29,9 @@ export const Navigation: React.FC<NavigationProps> = ({
         onClick={onNext}
         className="btn-primary"
         style={currentStep === 0 ? { width: '100%' } : {}}
+        disabled={isLoading}
       >
-        {currentStep === totalSteps - 1 ? 'Finalizar' : 'Siguiente'}
+        {isLoading ? 'Procesando...' : (currentStep === totalSteps - 1 ? 'Finalizar' : 'Siguiente')}
       </button>
     </div>
   )

@@ -3,7 +3,7 @@ export interface FormData {
   lastName: string
   documentType: string
   documentNumber: string
-  areaCode: string
+  phoneArea: string
   phoneNumber: string
   email: string
   isMember: boolean
@@ -13,6 +13,8 @@ export interface FormData {
   installments: number
   annualPayment: boolean
   photoUrl?: string
+  institutionId: string
+  status: 'pending' | 'approved' | 'rejected'
 }
 
 export interface Plan {

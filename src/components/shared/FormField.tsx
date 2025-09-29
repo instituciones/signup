@@ -67,11 +67,26 @@ export const FormSelect: React.FC<FormSelectProps> = ({
   placeholder = 'Seleccione una opción',
   error = false
 }) => {
+  // Validar que el valor actual existe en las opciones
+  const normalizedValue = options.find(opt => opt.value === value) ? value : ''
+
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newValue = e.target.value
+    console.log('FormSelect onChange - newValue:', newValue, 'type:', typeof newValue)
+
+    // Validación adicional para Android
+    if (newValue !== undefined && newValue !== null) {
+      onChange(newValue)
+    }
+  }
+
   return (
     <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
+      value={normalizedValue}
+      onChange={handleChange}
       className={`form-select ${error ? 'error' : ''}`}
+      // Forzar re-render con key basado en valor
+      key={`select-${normalizedValue}-${options.length}`}
     >
       <option value="">{placeholder}</option>
       {options.map((option) => (

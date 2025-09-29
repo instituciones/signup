@@ -49,8 +49,20 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
             console.log('Valor recibido:', value, typeof value)
             console.log('formData.installments actual:', formData.installments, typeof formData.installments)
 
-            const cuotas = parseInt(value)
-            console.log('parseInt(value):', cuotas, typeof cuotas, 'isNaN:', isNaN(cuotas))
+            // Validación más robusta para Android
+            if (!value || value === '') {
+              console.log('Valor vacío recibido, no actualizando')
+              return
+            }
+
+            const cuotas = parseInt(value, 10)
+            console.log('parseInt(value, 10):', cuotas, typeof cuotas, 'isNaN:', isNaN(cuotas))
+
+            // Validar que el número está en el rango correcto
+            if (isNaN(cuotas) || cuotas < 1 || cuotas > 12) {
+              console.error('Valor de cuotas inválido:', cuotas)
+              return
+            }
 
             const updates: Partial<FormData> = { installments: cuotas }
             console.log('Updates que se van a aplicar:', updates)
@@ -66,7 +78,11 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
             }
 
             console.log('Llamando updateFormData con:', updates)
-            updateFormData(updates)
+
+            // Usar setTimeout para evitar problemas de timing en Android
+            setTimeout(() => {
+              updateFormData(updates)
+            }, 0)
           }}
           options={Array.from({ length: 12 }, (_, i) => {
             const cuota = i + 1

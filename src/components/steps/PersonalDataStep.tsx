@@ -48,7 +48,6 @@ export const PersonalDataStep: React.FC<PersonalDataStepProps> = ({
         <FormInput
           value={formData.documentNumber}
           onChange={(value) => updateFormData({ documentNumber: value })}
-          placeholder="Número de documento"
           error={!!errors.documentNumber}
         />
       </FormField>

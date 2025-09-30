@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { useQuery, useMutation } from '@apollo/client/react'
 import { GET_PENDING_PROVISIONAL_RECORDS } from '../../services/queries'
-import { CREATE_MEMBER_PAYMENT } from '../../graphql/mutations'
+import { CREATE_MEMBER_PAYMENT, CREATE_MEMBER } from '../../graphql/mutations'
 import { GetPendingProvisionalRecordsResponse, ProvisionalRecord } from '../../types/graphql'
-import { CreateMemberPaymentInput } from '../../graphql/mutations'
+import { CreateMemberPaymentInput, CreateMemberInput } from '../../graphql/mutations'
 import { PendingRecordsTable } from './PendingRecordsTable'
 import { ActivationModal } from './ActivationModal'
 
@@ -12,6 +12,13 @@ export const NuevosPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const { data, loading, error, refetch } = useQuery<GetPendingProvisionalRecordsResponse>(GET_PENDING_PROVISIONAL_RECORDS)
+
+  const [createMember, { loading: isCreatingMember }] = useMutation(CREATE_MEMBER, {
+    onError: (error) => {
+      console.error('Error creating member:', error)
+      alert(`Error al crear miembro: ${error.message}`)
+    }
+  })
 
   const [createMemberPayment, { loading: isCreatingPayment }] = useMutation(CREATE_MEMBER_PAYMENT, {
     onCompleted: () => {
@@ -44,21 +51,41 @@ export const NuevosPage: React.FC = () => {
     if (!selectedRecord) return
 
     try {
-      // Enviamos el primer pago y la cantidad de installments
-      // El backend manejará la lógica de crear múltiples pagos
-      const input: CreateMemberPaymentInput = {
-        memberId: selectedRecord.id,
-        institutionId: '219f36ed-d8ac-4754-9384-d9f181dbfa94',
-        year: payments[0].year,
-        month: payments[0].month,
-        amount: payments[0].amount,
-        status: 'pending',
-        installments: selectedRecord.installments
+      // Primero crear el member
+      const memberInput: CreateMemberInput = {
+        firstName: selectedRecord.firstName,
+        lastName: selectedRecord.lastName,
+        phoneArea: selectedRecord.phoneArea,
+        phoneNumber: selectedRecord.phoneNumber,
+        document_id: selectedRecord.documentNumber,
+        document_type: selectedRecord.documentType,
+        institutionId: '219f36ed-d8ac-4754-9384-d9f181dbfa94'
       }
 
-      await createMemberPayment({
-        variables: { input }
+      const memberResult = await createMember({
+        variables: { input: memberInput }
       })
+
+      // Si el member se creó exitosamente, usar su ID para crear el payment
+      if (memberResult.data?.createMember?.id) {
+        const memberId = memberResult.data.createMember.id
+
+        // Enviamos el primer pago y la cantidad de installments
+        // El backend manejará la lógica de crear múltiples pagos
+        const paymentInput: CreateMemberPaymentInput = {
+          memberId: memberId, // Usar el ID del member recién creado
+          institutionId: '219f36ed-d8ac-4754-9384-d9f181dbfa94',
+          year: payments[0].year,
+          month: payments[0].month,
+          amount: payments[0].amount,
+          status: 'pending',
+          installments: selectedRecord.installments
+        }
+
+        await createMemberPayment({
+          variables: { input: paymentInput }
+        })
+      }
     } catch (error) {
       console.error('Error in handleConfirmActivation:', error)
     }
@@ -93,7 +120,7 @@ export const NuevosPage: React.FC = () => {
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           onConfirm={handleConfirmActivation}
-          isLoading={isCreatingPayment}
+          isLoading={isCreatingMember || isCreatingPayment}
         />
       )}
     </div>

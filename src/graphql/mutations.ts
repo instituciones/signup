@@ -24,6 +24,21 @@ export const CREATE_PROVISIONAL_RECORD = gql`
   }
 `
 
+export const CREATE_MEMBER = gql`
+  mutation CreateMember($input: CreateMemberInput!) {
+    createMember(input: $input) {
+      id
+      firstName
+      lastName
+      phoneArea
+      phoneNumber
+      document_id
+      document_type
+      institutionId
+    }
+  }
+`
+
 export const CREATE_MEMBER_PAYMENT = gql`
   mutation CreateMemberPayment($input: CreateMemberPaymentInput!) {
     createMemberPayment(input: $input) {
@@ -41,6 +56,16 @@ export const CREATE_MEMBER_PAYMENT = gql`
 `
 
 // Type definitions for the mutation input
+export interface CreateMemberInput {
+  firstName: string
+  lastName: string
+  phoneArea: string
+  phoneNumber: string
+  document_id: string
+  document_type: string
+  institutionId: string
+}
+
 export interface CreateProvisionalRecordInput {
   firstName: string
   lastName: string

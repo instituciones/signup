@@ -3,7 +3,7 @@ import { useQuery, useMutation } from '@apollo/client/react'
 import { GET_PENDING_PROVISIONAL_RECORDS } from '../../services/queries'
 import { CREATE_MEMBER_PAYMENT, CREATE_MEMBER } from '../../graphql/mutations'
 import { GetPendingProvisionalRecordsResponse, ProvisionalRecord } from '../../types/graphql'
-import { CreateMemberPaymentInput, CreateMemberInput } from '../../graphql/mutations'
+import { CreateMemberPaymentInput, CreateMemberInput, CreateMemberResponse } from '../../graphql/mutations'
 import { PendingRecordsTable } from './PendingRecordsTable'
 import { ActivationModal } from './ActivationModal'
 
@@ -13,7 +13,7 @@ export const NuevosPage: React.FC = () => {
 
   const { data, loading, error, refetch } = useQuery<GetPendingProvisionalRecordsResponse>(GET_PENDING_PROVISIONAL_RECORDS)
 
-  const [createMember, { loading: isCreatingMember }] = useMutation(CREATE_MEMBER, {
+  const [createMember, { loading: isCreatingMember }] = useMutation<CreateMemberResponse, { input: CreateMemberInput }>(CREATE_MEMBER, {
     onError: (error) => {
       console.error('Error creating member:', error)
       alert(`Error al crear miembro: ${error.message}`)

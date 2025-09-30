@@ -66,6 +66,21 @@ export interface CreateMemberInput {
   institutionId: string
 }
 
+export interface Member {
+  id: string
+  firstName: string
+  lastName: string
+  phoneArea: string
+  phoneNumber: string
+  document_id: string
+  document_type: string
+  institutionId: string
+}
+
+export interface CreateMemberResponse {
+  createMember: Member
+}
+
 export interface CreateProvisionalRecordInput {
   firstName: string
   lastName: string

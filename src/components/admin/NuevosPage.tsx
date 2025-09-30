@@ -10,8 +10,11 @@ import { ActivationModal } from './ActivationModal'
 export const NuevosPage: React.FC = () => {
   const [selectedRecord, setSelectedRecord] = useState<ProvisionalRecord | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [statusFilter, setStatusFilter] = useState<string>('pending')
 
-  const { data, loading, error, refetch } = useQuery<GetPendingProvisionalRecordsResponse>(GET_PENDING_PROVISIONAL_RECORDS)
+  const { data, loading, error, refetch } = useQuery<GetPendingProvisionalRecordsResponse>(GET_PENDING_PROVISIONAL_RECORDS, {
+    variables: { status: statusFilter }
+  })
 
   const [createMember, { loading: isCreatingMember }] = useMutation<CreateMemberResponse, { input: CreateMemberInput }>(CREATE_MEMBER, {
     onError: (error) => {
@@ -37,6 +40,10 @@ export const NuevosPage: React.FC = () => {
     refetch()
   }
 
+  const handleStatusFilterChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setStatusFilter(event.target.value)
+  }
+
   const handleActivate = (record: ProvisionalRecord) => {
     setSelectedRecord(record)
     setIsModalOpen(true)
@@ -57,8 +64,8 @@ export const NuevosPage: React.FC = () => {
         lastName: selectedRecord.lastName,
         phoneArea: selectedRecord.phoneArea,
         phoneNumber: selectedRecord.phoneNumber,
-        document_id: selectedRecord.documentNumber,
-        document_type: selectedRecord.documentType,
+        documentId: selectedRecord.documentNumber,
+        documentType: selectedRecord.documentType,
         institutionId: '219f36ed-d8ac-4754-9384-d9f181dbfa94'
       }
 
@@ -79,7 +86,8 @@ export const NuevosPage: React.FC = () => {
           month: payments[0].month,
           amount: payments[0].amount,
           status: 'pending',
-          installments: selectedRecord.installments
+          installments: selectedRecord.installments,
+          id: selectedRecord.id
         }
 
         await createMemberPayment({
@@ -96,6 +104,15 @@ export const NuevosPage: React.FC = () => {
       <div className="page-header">
         <h1>Registros Nuevos</h1>
         <div className="header-actions">
+          <select
+            value={statusFilter}
+            onChange={handleStatusFilterChange}
+            className="status-filter-select"
+            disabled={loading}
+          >
+            <option value="pending">Pendientes</option>
+            <option value="completed">Completados</option>
+          </select>
           <button className="btn-secondary" onClick={handleRefresh} disabled={loading}>
             {loading ? 'Actualizando...' : '🔄 Actualizar'}
           </button>

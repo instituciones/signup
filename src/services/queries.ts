@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client'
 
 export const GET_PENDING_PROVISIONAL_RECORDS = gql`
-  query GetPendingProvisionalRecords {
-    pendingProvisionalRecords {
+  query GetPendingProvisionalRecords($status: String) {
+    pendingProvisionalRecords(status: $status) {
       id
       firstName
       lastName

@@ -15,15 +15,22 @@ export const MembershipStep: React.FC<MembershipStepProps> = ({
 }) => {
   return (
     <div className="step-content">
-      <div className="form-group checkbox-group">
-        <label className="checkbox-label">
-          <input
-            type="checkbox"
-            checked={formData.isMember}
-            onChange={(e) => updateFormData({ isMember: e.target.checked })}
-          />
+      <div className="form-group switch-group">
+        <label className="switch-label">
           ¿Fuiste socio?
         </label>
+        <div className="switch-container">
+          <span className={`switch-text ${!formData.isMember ? 'active' : ''}`}>No</span>
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={formData.isMember}
+              onChange={(e) => updateFormData({ isMember: e.target.checked })}
+            />
+            <span className="slider"></span>
+          </label>
+          <span className={`switch-text ${formData.isMember ? 'active' : ''}`}>Sí</span>
+        </div>
       </div>
 
       {formData.isMember && (
@@ -39,15 +46,22 @@ export const MembershipStep: React.FC<MembershipStepProps> = ({
         </>
       )}
 
-      <div className="form-group checkbox-group">
-        <label className="checkbox-label">
-          <input
-            type="checkbox"
-            checked={formData.hasDebt}
-            onChange={(e) => updateFormData({ hasDebt: e.target.checked })}
-          />
+      <div className="form-group switch-group">
+        <label className="switch-label">
           ¿Tienes deuda?
         </label>
+        <div className="switch-container">
+          <span className={`switch-text ${!formData.hasDebt ? 'active' : ''}`}>No</span>
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={formData.hasDebt}
+              onChange={(e) => updateFormData({ hasDebt: e.target.checked })}
+            />
+            <span className="slider"></span>
+          </label>
+          <span className={`switch-text ${formData.hasDebt ? 'active' : ''}`}>Sí</span>
+        </div>
       </div>
       {formData.hasDebt && (
         <div className="amnesty-message">

@@ -6,8 +6,12 @@ import { GetPendingProvisionalRecordsResponse, ProvisionalRecord } from '../../t
 import { CreateMemberPaymentInput, CreateMemberInput, CreateMemberResponse } from '../../graphql/mutations'
 import { PendingRecordsTable } from './PendingRecordsTable'
 import { ActivationModal } from './ActivationModal'
+import { useAuth, useInstitution } from '../../contexts/AuthContext'
+import { getInstitutionStyles, getInstitutionLogo } from '../../utils/institutionUtils'
 
 export const NuevosPage: React.FC = () => {
+  const { user, logout } = useAuth()
+  const institution = useInstitution()
   const [selectedRecord, setSelectedRecord] = useState<ProvisionalRecord | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [statusFilter, setStatusFilter] = useState<string>('pending')
@@ -65,8 +69,7 @@ export const NuevosPage: React.FC = () => {
         phoneArea: selectedRecord.phoneArea,
         phoneNumber: selectedRecord.phoneNumber,
         documentId: selectedRecord.documentNumber,
-        documentType: selectedRecord.documentType,
-        institutionId: '219f36ed-d8ac-4754-9384-d9f181dbfa94'
+        documentType: selectedRecord.documentType
       }
 
       const memberResult = await createMember({
@@ -81,13 +84,12 @@ export const NuevosPage: React.FC = () => {
         // El backend manejará la lógica de crear múltiples pagos
         const paymentInput: CreateMemberPaymentInput = {
           memberId: memberId, // Usar el ID del member recién creado
-          institutionId: '219f36ed-d8ac-4754-9384-d9f181dbfa94',
           year: payments[0].year,
           month: payments[0].month,
           amount: payments[0].amount,
           status: 'pending',
-          installments: selectedRecord.hasDebt ? 
-            selectedRecord.installments + 1 : 
+          installments: selectedRecord.hasDebt ?
+            selectedRecord.installments + 1 :
             selectedRecord.installments,
           id: selectedRecord.id
         }
@@ -101,10 +103,26 @@ export const NuevosPage: React.FC = () => {
     }
   }
 
+  // Aplicar colores de la institución como CSS custom properties
+  const institutionStyles = getInstitutionStyles(institution)
+  const institutionLogo = getInstitutionLogo(institution)
+
   return (
-    <div className="nuevos-page">
+    <div className="nuevos-page" style={institutionStyles}>
       <div className="page-header">
-        <h1>Registros Nuevos</h1>
+        <div className="header-title">
+          <div className="title-with-logo">
+            {institutionLogo && (
+              <img
+                src={institutionLogo}
+                alt={`Logo de ${institution?.name}`}
+                className="institution-logo"
+              />
+            )}
+            <h1>Registros Nuevos - {institution?.name}</h1>
+          </div>
+          <p className="user-info">Bienvenido, {user?.email}</p>
+        </div>
         <div className="header-actions">
           <select
             value={statusFilter}
@@ -117,6 +135,9 @@ export const NuevosPage: React.FC = () => {
           </select>
           <button className="btn-secondary" onClick={handleRefresh} disabled={loading}>
             {loading ? 'Actualizando...' : '🔄 Actualizar'}
+          </button>
+          <button className="btn-logout" onClick={logout}>
+            Cerrar Sesión
           </button>
         </div>
       </div>

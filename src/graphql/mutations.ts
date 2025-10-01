@@ -52,6 +52,25 @@ export const CREATE_MEMBER_PAYMENT = gql`
   }
 `
 
+export const LOGIN = gql`
+  mutation Login($input: LoginInput!) {
+    login(input: $input) {
+      token
+      user {
+        id
+        email
+        role
+        institution {
+          id
+          name
+          logo
+          colors
+        }
+      }
+    }
+  }
+`
+
 // Type definitions for the mutation input
 export interface CreateMemberInput {
   firstName: string
@@ -60,7 +79,6 @@ export interface CreateMemberInput {
   phoneNumber: string
   documentId: string
   documentType: string
-  institutionId: string
 }
 
 export interface Member {
@@ -73,6 +91,34 @@ export interface Member {
 
 export interface CreateMemberResponse {
   createMember: Member
+}
+
+export interface LoginInput {
+  email: string
+  password: string
+}
+
+export interface Institution {
+  id: string
+  name: string
+  logo?: string
+  colors: string[]
+}
+
+export interface AuthUser {
+  id: string
+  email: string
+  role?: string
+  institution: Institution
+}
+
+export interface AuthResponse {
+  token: string
+  user: AuthUser
+}
+
+export interface LoginResponse {
+  login: AuthResponse
 }
 
 export interface CreateProvisionalRecordInput {
@@ -96,7 +142,6 @@ export interface CreateProvisionalRecordInput {
 export interface CreateMemberPaymentInput {
   id: string
   memberId: string
-  institutionId: string
   year: number
   month: number
   amount: number

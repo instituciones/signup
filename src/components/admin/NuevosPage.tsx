@@ -86,7 +86,9 @@ export const NuevosPage: React.FC = () => {
           month: payments[0].month,
           amount: payments[0].amount,
           status: 'pending',
-          installments: selectedRecord.installments,
+          installments: selectedRecord.hasDebt ? 
+            selectedRecord.installments + 1 : 
+            selectedRecord.installments,
           id: selectedRecord.id
         }
 

@@ -33,22 +33,24 @@ export const ActivationModal: React.FC<ActivationModalProps> = ({
     let startMonth = createdDate.getMonth() + 1 // getMonth() returns 0-11
     let startYear = createdDate.getFullYear()
 
-    // Si tiene deuda, empezar un mes antes
+    // Si tiene deuda, empezar un mes antes e incrementar las cuotas en 1
+    let totalInstallments = record.installments
     if (record.hasDebt) {
       startMonth -= 1
       if (startMonth === 0) {
         startMonth = 12
         startYear -= 1
       }
+      totalInstallments += 1
     }
 
     const payments: PaymentPlan[] = []
     let currentMonth = startMonth
     let currentYear = startYear
 
-    for (let i = 0; i < record.installments; i++) {
+    for (let i = 0; i < totalInstallments; i++) {
       // Si son 12 o más cuotas, las últimas 2 cuotas son bonificadas (valor 0)
-      const isBonified = record.installments >= 12 && i >= record.installments - 2
+      const isBonified = totalInstallments >= 12 && i >= totalInstallments - 2
 
       payments.push({
         month: currentMonth,
@@ -70,6 +72,7 @@ export const ActivationModal: React.FC<ActivationModalProps> = ({
   const payments = calculatePayments()
   const plan = PLANES.find(p => p.id === record.selectedPlan)
   const totalAmount = payments.reduce((sum, payment) => sum + payment.amount, 0)
+  const totalInstallments = record.hasDebt ? record.installments + 1 : record.installments
 
   const getMonthName = (month: number) => {
     const months = [
@@ -98,11 +101,11 @@ export const ActivationModal: React.FC<ActivationModalProps> = ({
             <h4>{record.firstName} {record.lastName}</h4>
             <p><strong>Plan:</strong> {plan?.name}</p>
             <p><strong>Documento:</strong> {record.documentType} {record.documentNumber}</p>
-            <p><strong>Cuotas:</strong> {record.installments}</p>
+            <p><strong>Cuotas:</strong> {totalInstallments}</p>
             {record.hasDebt && (
               <p className="debt-notice"><strong>⚠️ Tiene deuda:</strong> Se incluye cuota de reinscripción</p>
             )}
-            {record.installments >= 12 && (
+            {totalInstallments >= 12 && (
               <p className="bonification-notice"><strong>🎉 Descuento aplicado:</strong> Las últimas 2 cuotas están bonificadas</p>
             )}
           </div>

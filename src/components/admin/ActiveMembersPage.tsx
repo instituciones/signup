@@ -130,9 +130,6 @@ export const ActiveMembersPage: React.FC = () => {
           <button className="btn-secondary" onClick={handleRefresh} disabled={loading}>
             {loading ? 'Actualizando...' : '🔄 Actualizar'}
           </button>
-          <button className="btn-secondary" onClick={handlePrint}>
-            🖨️ Imprimir
-          </button>
           {user && (
             <button className="btn-secondary" onClick={() => navigate('/nuevos')}>
               Nuevos Registros
@@ -179,6 +176,10 @@ export const ActiveMembersPage: React.FC = () => {
 
         <button className="btn-clear-filters" onClick={handleClearFilters}>
           Limpiar filtros
+        </button>
+
+        <button className="btn-print" onClick={handlePrint}>
+          🖨️ Imprimir
         </button>
       </div>
 

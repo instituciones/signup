@@ -450,12 +450,14 @@ input:focus + .slider {
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
   gap: 1rem;
-  border-bottom: 2px solid var(--institution-primary, #059669);
-  padding-bottom: 1rem;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .title-with-logo {
@@ -1805,6 +1807,26 @@ input:focus + .slider {
   border-color: #9ca3af;
 }
 
+.btn-print {
+  background: var(--institution-primary, #059669);
+  color: white;
+  border: none;
+  padding: 0.625rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  align-self: flex-end;
+  white-space: nowrap;
+}
+
+.btn-print:hover {
+  background: var(--institution-primary-dark, #047857);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 @media (max-width: 768px) {
   .filters-section {
     padding: 1rem;
@@ -1815,7 +1837,8 @@ input:focus + .slider {
     min-width: 150px;
   }
 
-  .btn-clear-filters {
+  .btn-clear-filters,
+  .btn-print {
     align-self: stretch;
     width: 100%;
   }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useQuery, useMutation } from '@apollo/client/react'
+import { useNavigate } from 'react-router-dom'
 import { GET_PENDING_PROVISIONAL_RECORDS } from '../../services/queries'
 import { CREATE_MEMBER_PAYMENT, CREATE_MEMBER } from '../../graphql/mutations'
 import { GetPendingProvisionalRecordsResponse, ProvisionalRecord } from '../../types/graphql'
@@ -12,6 +13,7 @@ import { getInstitutionStyles, getInstitutionLogo } from '../../utils/institutio
 export const NuevosPage: React.FC = () => {
   const { user, logout } = useAuth()
   const institution = useInstitution()
+  const navigate = useNavigate()
   const [selectedRecord, setSelectedRecord] = useState<ProvisionalRecord | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [statusFilter, setStatusFilter] = useState<string>('pending')
@@ -135,6 +137,9 @@ export const NuevosPage: React.FC = () => {
           </select>
           <button className="btn-secondary" onClick={handleRefresh} disabled={loading}>
             {loading ? 'Actualizando...' : '🔄 Actualizar'}
+          </button>
+          <button className="btn-secondary" onClick={() => navigate('/activos')}>
+            Miembros Activos
           </button>
           <button className="btn-logout" onClick={logout}>
             Cerrar Sesión

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ApolloProvider } from '@apollo/client/react';
 import Dashboard from './components/Dashboard';
 import { NuevosPage } from './components/admin/NuevosPage';
+import { ActiveMembersPage } from './components/admin/ActiveMembersPage';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import { apolloClient } from './lib/apollo';
@@ -21,6 +22,7 @@ function App() {
                   <NuevosPage />
                 </ProtectedRoute>
               } />
+              <Route path="/activos" element={<ActiveMembersPage />} />
             </Routes>
           </div>
         </Router>

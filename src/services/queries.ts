@@ -25,3 +25,26 @@ export const GET_PENDING_PROVISIONAL_RECORDS = gql`
     }
   }
 `
+
+export const GET_MEMBERS = gql`
+  query GetMembers($filters: MemberFilters) {
+    members(filters: $filters) {
+      id
+      firstName
+      lastName
+      memberNumber
+      documentId
+      documentType
+      phoneArea
+      phoneNumber
+      payments {
+        year
+        month
+        amount
+        status
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`

@@ -20,7 +20,6 @@ export const ActivationScreen: React.FC<ActivationScreenProps> = ({
           <h4>⚠️ Para activar tu membresía:</h4>
           <p>• Envía el comprobante por WhatsApp:</p>
           <div className="phone-numbers">
-            <a href="https://wa.me/542646737411" target="_blank" rel="noopener noreferrer">📱 264-673-7411</a>
             <a href="https://wa.me/542644177806" target="_blank" rel="noopener noreferrer">📱 264-417-7806</a>
             <a href="https://wa.me/542644889141" target="_blank" rel="noopener noreferrer">📱 264-488-9141</a>
           </div>

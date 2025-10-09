@@ -37,6 +37,9 @@ export const GET_MEMBERS = gql`
       documentType
       phoneArea
       phoneNumber
+      user {
+        email
+      }
       payments {
         year
         month

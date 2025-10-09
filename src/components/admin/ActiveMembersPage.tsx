@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
-import { useQuery } from '@apollo/client/react'
+import { useQuery, useMutation } from '@apollo/client/react'
 import { useNavigate } from 'react-router-dom'
 import { GET_MEMBERS } from '../../services/queries'
+import { UPDATE_MEMBER } from '../../graphql/mutations'
 import { MembersTable } from './MembersTable'
+import { EditMemberModal } from './EditMemberModal'
 import { useAuth, useInstitution } from '../../contexts/AuthContext'
 import { getInstitutionStyles, getInstitutionLogo } from '../../utils/institutionUtils'
 
@@ -36,8 +38,13 @@ export const ActiveMembersPage: React.FC = () => {
   const { user } = useAuth()
   const institution = useInstitution()
   const navigate = useNavigate()
-  const [selectedYear, setSelectedYear] = useState<number | undefined>(undefined)
-  const [selectedMonth, setSelectedMonth] = useState<number | undefined>(undefined)
+
+  // Usar la fecha del servidor (fecha actual)
+  const currentDate = new Date()
+  const [selectedYear, setSelectedYear] = useState<number | undefined>(currentDate.getFullYear())
+  const [selectedMonth, setSelectedMonth] = useState<number | undefined>(currentDate.getMonth() + 1)
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const { data, loading, error, refetch } = useQuery<GetMembersResponse>(GET_MEMBERS, {
     variables: {
@@ -45,6 +52,18 @@ export const ActiveMembersPage: React.FC = () => {
         paymentYear: selectedYear,
         paymentMonth: selectedMonth
       }
+    }
+  })
+
+  const [updateMember, { loading: updateLoading }] = useMutation(UPDATE_MEMBER, {
+    onCompleted: () => {
+      setIsModalOpen(false)
+      setSelectedMember(null)
+      refetch()
+    },
+    onError: (error) => {
+      console.error('Error updating member:', error)
+      alert('Error al actualizar el socio: ' + error.message)
     }
   })
 
@@ -87,6 +106,25 @@ export const ActiveMembersPage: React.FC = () => {
   const handleClearFilters = () => {
     setSelectedYear(undefined)
     setSelectedMonth(undefined)
+  }
+
+  const handleEditMember = (member: Member) => {
+    setSelectedMember(member)
+    setIsModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setSelectedMember(null)
+  }
+
+  const handleSaveMember = (id: string, updates: Partial<Member>) => {
+    updateMember({
+      variables: {
+        id,
+        input: updates
+      }
+    })
   }
 
   const institutionStyles = getInstitutionStyles(institution)
@@ -147,6 +185,7 @@ export const ActiveMembersPage: React.FC = () => {
             value={selectedYear || ''}
             onChange={(e) => setSelectedYear(e.target.value ? parseInt(e.target.value) : undefined)}
             className="filter-select"
+            disabled
           >
             <option value="">Todos</option>
             {yearOptions.map((year) => (
@@ -164,6 +203,7 @@ export const ActiveMembersPage: React.FC = () => {
             value={selectedMonth || ''}
             onChange={(e) => setSelectedMonth(e.target.value ? parseInt(e.target.value) : undefined)}
             className="filter-select"
+            disabled
           >
             <option value="">Todos</option>
             {months.map((month) => (
@@ -174,7 +214,7 @@ export const ActiveMembersPage: React.FC = () => {
           </select>
         </div>
 
-        <button className="btn-clear-filters" onClick={handleClearFilters}>
+        <button className="btn-clear-filters" onClick={handleClearFilters} disabled>
           Limpiar filtros
         </button>
 
@@ -193,6 +233,15 @@ export const ActiveMembersPage: React.FC = () => {
         members={data?.members || []}
         loading={loading}
         isLoggedIn={!!user}
+        onEditMember={user ? handleEditMember : undefined}
+      />
+
+      <EditMemberModal
+        member={selectedMember}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleSaveMember}
+        isLoading={updateLoading}
       />
     </div>
   )

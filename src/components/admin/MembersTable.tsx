@@ -26,9 +26,10 @@ interface MembersTableProps {
   members: Member[]
   loading?: boolean
   isLoggedIn?: boolean
+  onEditMember?: (member: Member) => void
 }
 
-export const MembersTable: React.FC<MembersTableProps> = ({ members, loading, isLoggedIn = false }) => {
+export const MembersTable: React.FC<MembersTableProps> = ({ members, loading, isLoggedIn = false, onEditMember }) => {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('es-AR', {
       day: '2-digit',
@@ -100,6 +101,7 @@ export const MembersTable: React.FC<MembersTableProps> = ({ members, loading, is
               <th>Teléfono</th>
               {isLoggedIn && <th>Último Pago</th>}
               {isLoggedIn && <th>Fecha Alta</th>}
+              {isLoggedIn && onEditMember && <th>Acciones</th>}
             </tr>
           </thead>
           <tbody>
@@ -128,6 +130,17 @@ export const MembersTable: React.FC<MembersTableProps> = ({ members, loading, is
                     </td>
                   )}
                   {isLoggedIn && <td>{formatDate(member.createdAt)}</td>}
+                  {isLoggedIn && onEditMember && (
+                    <td>
+                      <button
+                        className="btn-edit"
+                        onClick={() => onEditMember(member)}
+                        title="Editar socio"
+                      >
+                        ✏️
+                      </button>
+                    </td>
+                  )}
                 </tr>
               )
             })}

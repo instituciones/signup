@@ -71,6 +71,19 @@ export const LOGIN = gql`
   }
 `
 
+export const UPDATE_MEMBER = gql`
+  mutation UpdateMember($id: ID!, $input: UpdateMemberInput!) {
+    updateMember(id: $id, input: $input) {
+      id
+      firstName
+      lastName
+      memberNumber
+      phoneArea
+      phoneNumber
+    }
+  }
+`
+
 // Type definitions for the mutation input
 export interface CreateMemberInput {
   firstName: string
@@ -179,4 +192,25 @@ export interface ProvisionalRecord {
   status: 'pending' | 'approved' | 'rejected'
   createdAt: string
   updatedAt: string
+}
+
+export interface UpdateMemberInput {
+  memberNumber?: string
+  firstName?: string
+  lastName?: string
+  phoneArea?: string
+  phoneNumber?: string
+  email?: string
+}
+
+export interface UpdateMemberResponse {
+  updateMember: {
+    id: string
+    firstName: string
+    lastName: string
+    memberNumber: string
+    phoneArea: string
+    phoneNumber: string
+    email?: string
+  }
 }

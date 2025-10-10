@@ -92,6 +92,8 @@ export interface CreateMemberInput {
   phoneNumber: string
   documentId: string
   documentType: string
+  email?: string
+  memberNumber?: string
 }
 
 export interface Member {

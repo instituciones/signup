@@ -71,9 +71,11 @@ export const NuevosPage: React.FC = () => {
         phoneArea: selectedRecord.phoneArea,
         phoneNumber: selectedRecord.phoneNumber,
         documentId: selectedRecord.documentNumber,
-        documentType: selectedRecord.documentType
+        documentType: selectedRecord.documentType,
+        email: selectedRecord.email || undefined,
+        memberNumber: selectedRecord.memberNumber || undefined,
       }
-
+      
       const memberResult = await createMember({
         variables: { input: memberInput }
       })

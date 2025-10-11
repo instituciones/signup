@@ -8,6 +8,9 @@ interface Member {
   phoneArea: string
   phoneNumber: string
   email?: string
+  user?: {
+    email: string
+  } | null
 }
 
 interface EditMemberModalProps {
@@ -42,7 +45,7 @@ export const EditMemberModal: React.FC<EditMemberModalProps> = ({
         lastName: member.lastName,
         phoneArea: member.phoneArea,
         phoneNumber: member.phoneNumber,
-        email: member.email || ''
+        email: member.user?.email ? member.user.email : (member.email || '')
       })
     }
   }, [member])

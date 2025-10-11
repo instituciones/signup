@@ -18,6 +18,9 @@ interface Member {
   phoneArea: string
   phoneNumber: string
   email?: string
+  user?: {
+    email: string
+  } | null
   payments: Payment[]
   createdAt: string
   updatedAt: string

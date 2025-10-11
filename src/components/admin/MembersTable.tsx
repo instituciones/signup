@@ -17,6 +17,9 @@ interface Member {
   phoneArea: string
   phoneNumber: string
   email?: string
+  user?: {
+    email: string
+  } | null
   payments: Payment[]
   createdAt: string
   updatedAt: string
@@ -97,6 +100,7 @@ export const MembersTable: React.FC<MembersTableProps> = ({ members, loading, is
             <tr>
               <th>N° Socio</th>
               <th>Apellido y Nombre</th>
+              <th>User</th>
               <th>Documento</th>
               <th>Teléfono</th>
               {isLoggedIn && <th>Último Pago</th>}
@@ -115,6 +119,9 @@ export const MembersTable: React.FC<MembersTableProps> = ({ members, loading, is
                     <div className="name-cell">
                       {member.lastName}, {member.firstName}
                     </div>
+                  </td>
+                  <td style={{ textAlign: 'center' }}>
+                    {member.user !== null && member.user !== undefined ? '✓' : ''}
                   </td>
                   <td>{member.documentId}</td>
                   <td>{member.phoneArea} {member.phoneNumber}</td>

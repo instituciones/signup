@@ -106,7 +106,6 @@ export const EditMemberModal: React.FC<EditMemberModalProps> = ({
                 value={formData.memberNumber}
                 onChange={handleChange}
                 disabled={isLoading}
-                required
               />
             </div>
 

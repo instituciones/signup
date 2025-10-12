@@ -181,7 +181,7 @@ export const ActiveMembersPage: React.FC = () => {
 
       {/* Filters Section */}
       <div className="filters-section">
-        <div className="filter-group">
+        {/* <div className="filter-group">
           <label htmlFor="year">Año:</label>
           <select
             id="year"
@@ -219,7 +219,7 @@ export const ActiveMembersPage: React.FC = () => {
 
         <button className="btn-clear-filters" onClick={handleClearFilters} disabled>
           Limpiar filtros
-        </button>
+        </button> */}
 
         <button className="btn-print" onClick={handlePrint}>
           🖨️ Imprimir

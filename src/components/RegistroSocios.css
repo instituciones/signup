@@ -1855,3 +1855,47 @@ input:focus + .slider {
     width: 100%;
   }
 }
+
+/* Print styles */
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  .page-header,
+  .filters-section,
+  .btn-edit,
+  .header-actions {
+    display: none !important;
+  }
+
+  .table-container {
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .table-wrapper {
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+  }
+
+  .records-table {
+    page-break-inside: auto;
+  }
+
+  .records-table tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  .records-table thead {
+    display: table-header-group;
+  }
+
+  .records-table tbody {
+    display: table-row-group;
+  }
+}

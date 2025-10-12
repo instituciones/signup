@@ -98,6 +98,7 @@ export const MembersTable: React.FC<MembersTableProps> = ({ members, loading, is
         <table className="records-table">
           <thead>
             <tr>
+              <th>#</th>
               <th>N° Socio</th>
               <th>Apellido y Nombre</th>
               <th>User</th>
@@ -109,11 +110,12 @@ export const MembersTable: React.FC<MembersTableProps> = ({ members, loading, is
             </tr>
           </thead>
           <tbody>
-            {sortedMembers.map((member) => {
+            {sortedMembers.map((member, index) => {
               const lastPayment = getLastPayment(member.payments)
 
               return (
                 <tr key={member.id}>
+                  <td>{index + 1}</td>
                   <td>{member.memberNumber}</td>
                   <td>
                     <div className="name-cell">

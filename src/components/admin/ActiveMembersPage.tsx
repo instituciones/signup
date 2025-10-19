@@ -7,6 +7,7 @@ import { MembersTable } from './MembersTable'
 import { EditMemberModal } from './EditMemberModal'
 import { useAuth, useInstitution } from '../../contexts/AuthContext'
 import { getInstitutionStyles, getInstitutionLogo } from '../../utils/institutionUtils'
+import { MONTHS } from '../../types/constants'
 
 interface Member {
   id: string
@@ -137,21 +138,6 @@ export const ActiveMembersPage: React.FC = () => {
   const currentYear = new Date().getFullYear()
   const yearOptions = Array.from({ length: 6 }, (_, i) => currentYear - i)
 
-  const months = [
-    { value: 1, label: 'Enero' },
-    { value: 2, label: 'Febrero' },
-    { value: 3, label: 'Marzo' },
-    { value: 4, label: 'Abril' },
-    { value: 5, label: 'Mayo' },
-    { value: 6, label: 'Junio' },
-    { value: 7, label: 'Julio' },
-    { value: 8, label: 'Agosto' },
-    { value: 9, label: 'Septiembre' },
-    { value: 10, label: 'Octubre' },
-    { value: 11, label: 'Noviembre' },
-    { value: 12, label: 'Diciembre' }
-  ]
-
   return (
     <div className="nuevos-page" style={institutionStyles}>
       <div className="page-header">
@@ -172,9 +158,14 @@ export const ActiveMembersPage: React.FC = () => {
             {loading ? 'Actualizando...' : '🔄 Actualizar'}
           </button>
           {user && (
-            <button className="btn-secondary" onClick={() => navigate('/nuevos')}>
-              Nuevos Registros
-            </button>
+            <>
+              <button className="btn-secondary" onClick={() => navigate('/nuevos')}>
+                Nuevos Registros
+              </button>
+              <button className="btn-secondary" onClick={() => navigate('/pagos-miembros')}>
+                Registrar Pagos
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -209,7 +200,7 @@ export const ActiveMembersPage: React.FC = () => {
             disabled
           >
             <option value="">Todos</option>
-            {months.map((month) => (
+            {MONTHS.map((month) => (
               <option key={month.value} value={month.value}>
                 {month.label}
               </option>

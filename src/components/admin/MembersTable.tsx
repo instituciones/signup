@@ -1,4 +1,5 @@
 import React from 'react'
+import { MONTHS } from '../../types/constants'
 
 interface Payment {
   year: number
@@ -60,11 +61,11 @@ export const MembersTable: React.FC<MembersTableProps> = ({ members, loading, is
   }
 
   const getMonthName = (month: number) => {
-    const months = [
+    const monthNames = [
       'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
       'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
     ]
-    return months[month - 1] || '-'
+    return monthNames[month - 1] || '-'
   }
 
   if (loading) {

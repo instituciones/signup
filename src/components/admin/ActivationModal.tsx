@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useQuery } from '@apollo/client/react'
 import { ProvisionalRecord } from '../../types/graphql'
-import { PLANES } from '../../types/constants'
+import { PLANES, MONTHS } from '../../types/constants'
+import { GET_INSTITUTION_PAYMENT_METHODS, GET_MEMBER_TYPES } from '../../services/queries'
 
 interface PaymentPlan {
   year: number
@@ -8,11 +10,36 @@ interface PaymentPlan {
   amount: number
 }
 
+interface PaymentMethod {
+  id: string
+  name: string
+}
+
+interface InstitutionPaymentMethod {
+  id: string
+  paymentMethod: PaymentMethod
+}
+
+interface GetInstitutionPaymentMethodsResponse {
+  institutionPaymentMethods: InstitutionPaymentMethod[]
+}
+
+interface MemberType {
+  id: string
+  name: string
+  price: number
+  description?: string
+}
+
+interface GetMemberTypesResponse {
+  memberTypes: MemberType[]
+}
+
 interface ActivationModalProps {
   record: ProvisionalRecord
   isOpen: boolean
   onClose: () => void
-  onConfirm: (payments: PaymentPlan[]) => void
+  onConfirm: (payments: PaymentPlan[], paymentMethodId: string, memberTypeId: string) => void
   isLoading?: boolean
 }
 
@@ -23,6 +50,17 @@ export const ActivationModal: React.FC<ActivationModalProps> = ({
   onConfirm,
   isLoading = false
 }) => {
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('')
+  const [selectedMemberType, setSelectedMemberType] = useState<string>('')
+
+  const { data: paymentMethodsData, loading: loadingPaymentMethods } = useQuery<GetInstitutionPaymentMethodsResponse>(
+    GET_INSTITUTION_PAYMENT_METHODS
+  )
+
+  const { data: memberTypesData, loading: loadingMemberTypes } = useQuery<GetMemberTypesResponse>(
+    GET_MEMBER_TYPES
+  )
+
   if (!isOpen) return null
 
   const calculatePayments = (): PaymentPlan[] => {
@@ -75,15 +113,20 @@ export const ActivationModal: React.FC<ActivationModalProps> = ({
   const totalInstallments = record.hasDebt ? record.installments + 1 : record.installments
 
   const getMonthName = (month: number) => {
-    const months = [
-      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-    ]
-    return months[month - 1]
+    const monthData = MONTHS.find(m => m.value === month)
+    return monthData?.label || '-'
   }
 
   const handleConfirm = () => {
-    onConfirm(payments)
+    if (!selectedPaymentMethod) {
+      alert('Por favor seleccione un método de pago')
+      return
+    }
+    if (!selectedMemberType) {
+      alert('Por favor seleccione un tipo de miembro')
+      return
+    }
+    onConfirm(payments, selectedPaymentMethod, selectedMemberType)
   }
 
   return (
@@ -108,6 +151,46 @@ export const ActivationModal: React.FC<ActivationModalProps> = ({
             {totalInstallments >= 12 && (
               <p className="bonification-notice"><strong>🎉 Descuento aplicado:</strong> Las últimas 2 cuotas están bonificadas</p>
             )}
+          </div>
+
+          <div className="payment-method-section">
+            <label htmlFor="memberType" className="payment-method-label">
+              <strong>Tipo de Miembro *</strong>
+            </label>
+            <select
+              id="memberType"
+              value={selectedMemberType}
+              onChange={(e) => setSelectedMemberType(e.target.value)}
+              className="payment-method-select"
+              disabled={loadingMemberTypes || isLoading}
+            >
+              <option value="">Seleccione un tipo de miembro</option>
+              {memberTypesData?.memberTypes.map((type) => (
+                <option key={type.id} value={type.id}>
+                  {type.name} (${type.price})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="payment-method-section">
+            <label htmlFor="paymentMethod" className="payment-method-label">
+              <strong>Método de Pago *</strong>
+            </label>
+            <select
+              id="paymentMethod"
+              value={selectedPaymentMethod}
+              onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+              className="payment-method-select"
+              disabled={loadingPaymentMethods || isLoading}
+            >
+              <option value="">Seleccione un método de pago</option>
+              {paymentMethodsData?.institutionPaymentMethods.map((ipm) => (
+                <option key={ipm.id} value={ipm.paymentMethod.id}>
+                  {ipm.paymentMethod.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="payment-schedule">
@@ -139,7 +222,7 @@ export const ActivationModal: React.FC<ActivationModalProps> = ({
           <button
             className="btn-primary"
             onClick={handleConfirm}
-            disabled={isLoading}
+            disabled={isLoading || !selectedPaymentMethod || !selectedMemberType}
           >
             {isLoading ? 'Activando...' : 'Confirmar Activación'}
           </button>

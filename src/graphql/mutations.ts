@@ -84,6 +84,37 @@ export const UPDATE_MEMBER = gql`
   }
 `
 
+export const INSERT_MEMBERS = gql`
+  mutation InsertMembers($input: InsertMembersInput!) {
+    insertMembers(input: $input) {
+      id
+      firstName
+      lastName
+      documentId
+      memberType {
+        id
+        name
+      }
+      user {
+        id
+        email
+      }
+    }
+  }
+`
+
+export const CREATE_MEMBER_PAYMENT_BY_ID = gql`
+  mutation CreateMemberPaymentById($input: CreateMemberPaymentByIdInput!) {
+    createMemberPaymentById(input: $input) {
+      id
+      month
+      year
+      amount
+      status
+    }
+  }
+`
+
 // Type definitions for the mutation input
 export interface CreateMemberInput {
   firstName: string
@@ -94,6 +125,8 @@ export interface CreateMemberInput {
   documentType: string
   email?: string
   memberNumber?: string
+  photoUrl?: string
+  memberTypeId: string
 }
 
 export interface Member {
@@ -157,6 +190,7 @@ export interface CreateProvisionalRecordInput {
 export interface CreateMemberPaymentInput {
   id: string
   memberId: string
+  paymentMethodId: string
   year: number
   month: number
   amount: number
@@ -214,5 +248,56 @@ export interface UpdateMemberResponse {
     phoneArea: string
     phoneNumber: string
     email?: string
+  }
+}
+
+export interface MonthPayment {
+  month: number
+  year: number
+  value: number
+}
+
+export interface MonthPaymentById {
+  month: number
+  year: number
+  amount: number
+}
+
+export interface InsertMembersInput {
+  dni: string
+  memberType: string
+  months: MonthPayment[]
+}
+
+export interface CreateMemberPaymentByIdInput {
+  memberId: string
+  paymentMethodId: string
+  months: MonthPaymentById[]
+}
+
+export interface CreateMemberPaymentByIdResponse {
+  createMemberPaymentById: {
+    id: string
+    month: number
+    year: number
+    amount: number
+    status: string
+  }[]
+}
+
+export interface InsertMembersResponse {
+  insertMembers: {
+    id: string
+    firstName: string
+    lastName: string
+    documentId: string
+    memberType: {
+      id: string
+      name: string
+    }
+    user: {
+      id: string
+      email: string
+    }
   }
 }

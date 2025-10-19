@@ -60,7 +60,7 @@ export const NuevosPage: React.FC = () => {
     setSelectedRecord(null)
   }
 
-  const handleConfirmActivation = async (payments: any[]) => {
+  const handleConfirmActivation = async (payments: any[], paymentMethodId: string, memberTypeId: string) => {
     if (!selectedRecord) return
 
     try {
@@ -74,8 +74,10 @@ export const NuevosPage: React.FC = () => {
         documentType: selectedRecord.documentType,
         email: selectedRecord.email || undefined,
         memberNumber: selectedRecord.memberNumber || undefined,
+        photoUrl: selectedRecord.photoUrl || undefined,
+        memberTypeId: memberTypeId,
       }
-      
+
       const memberResult = await createMember({
         variables: { input: memberInput }
       })
@@ -88,6 +90,7 @@ export const NuevosPage: React.FC = () => {
         // El backend manejará la lógica de crear múltiples pagos
         const paymentInput: CreateMemberPaymentInput = {
           memberId: memberId, // Usar el ID del member recién creado
+          paymentMethodId: paymentMethodId,
           year: payments[0].year,
           month: payments[0].month,
           amount: payments[0].amount,
@@ -142,6 +145,9 @@ export const NuevosPage: React.FC = () => {
           </button>
           <button className="btn-secondary" onClick={() => navigate('/activos')}>
             Miembros Activos
+          </button>
+          <button className="btn-secondary" onClick={() => navigate('/pagos-miembros')}>
+            Registrar Pagos
           </button>
           <button className="btn-logout" onClick={logout}>
             Cerrar Sesión

@@ -51,3 +51,42 @@ export const GET_MEMBERS = gql`
     }
   }
 `
+
+export const GET_MEMBER_TYPES = gql`
+  query GetMemberTypes {
+    memberTypes {
+      id
+      name
+      price
+      description
+    }
+  }
+`
+
+export const GET_MEMBER_BY_DNI = gql`
+  query GetMemberByDni($documentId: String!, $documentType: String!) {
+    memberByDni(documentId: $documentId, documentType: $documentType) {
+      id
+      firstName
+      lastName
+      documentId
+      memberType {
+        id
+        name
+        price
+      }
+    }
+  }
+`
+
+export const GET_INSTITUTION_PAYMENT_METHODS = gql`
+  query GetInstitutionPaymentMethods {
+    institutionPaymentMethods(activeOnly: true) {
+      id
+      paymentMethod {
+        id
+        name
+      }
+    }
+  }
+`

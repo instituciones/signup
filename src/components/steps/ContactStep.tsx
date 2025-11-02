@@ -25,7 +25,7 @@ export const ContactStep: React.FC<ContactStepProps> = ({
           />
         </FormField>
 
-        <FormField label="Teléfono" required error={errors.phoneNumber}>
+        <FormField label="Teléfono" error={errors.phoneNumber}>
           <FormInput
             value={formData.phoneNumber}
             onChange={(value) => updateFormData({ phoneNumber: value })}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useQuery, useMutation } from '@apollo/client/react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useFieldArray, useForm, Controller } from 'react-hook-form'
@@ -7,6 +7,7 @@ import { CREATE_MEMBER_PAYMENT_BY_ID, CreateMemberPaymentByIdInput, CreateMember
 import { useAuth, useInstitution } from '../../contexts/AuthContext'
 import { getInstitutionStyles, getInstitutionLogo } from '../../utils/institutionUtils'
 import { MONTHS } from '../../types/constants'
+import { MemberAutocomplete } from './MemberAutocomplete'
 
 interface MemberType {
   id: string
@@ -71,6 +72,25 @@ interface MemberByDniResponse {
   }
 }
 
+interface MemberFromAutocomplete {
+  id: string
+  firstName: string
+  lastName: string
+  memberNumber: string
+  documentId: string
+  documentType: string
+  phoneArea: string
+  phoneNumber: string
+  user?: {
+    email: string
+  } | null
+  memberType?: {
+    id: string
+    name: string
+    price: number
+  }
+}
+
 export const MemberPaymentsPage: React.FC = () => {
   const { user } = useAuth()
   const institution = useInstitution()
@@ -78,10 +98,12 @@ export const MemberPaymentsPage: React.FC = () => {
   const [searchParams] = useSearchParams()
   const dniParam = searchParams.get('dni')
 
+  const [currentMember, setCurrentMember] = useState<MemberFromAutocomplete | null>(null)
+
   const currentYear = new Date().getFullYear()
   const yearOptions = Array.from({ length: 7 }, (_, i) => 2024 + i) // 2024 a 2030
 
-  const { data: memberTypesData, loading: loadingTypes } = useQuery<GetMemberTypesResponse>(GET_MEMBER_TYPES)
+  const { loading: loadingTypes } = useQuery<GetMemberTypesResponse>(GET_MEMBER_TYPES)
 
   const { data: paymentMethodsData, loading: loadingPaymentMethods } = useQuery<GetInstitutionPaymentMethodsResponse>(
     GET_INSTITUTION_PAYMENT_METHODS
@@ -113,8 +135,7 @@ export const MemberPaymentsPage: React.FC = () => {
     register,
     control,
     handleSubmit,
-    formState: { errors },
-    setValue
+    formState: { errors }
   } = useForm<FormValues>({
     defaultValues: {
       paymentMethodId: '',
@@ -136,13 +157,21 @@ export const MemberPaymentsPage: React.FC = () => {
 
 
   const onSubmit = (data: FormValues) => {
-    if (!memberData?.memberByDni?.id) {
-      alert('No se encontró el miembro')
+    // Priorizar currentMember sobre memberData
+    const member = currentMember || memberData?.memberByDni
+
+    if (!member?.id) {
+      alert('No se ha seleccionado un miembro')
       return
     }
 
     // Obtener el precio del memberType del miembro
-    const memberTypePrice = memberData.memberByDni.memberType.price
+    const memberTypePrice = member.memberType?.price || 0
+
+    if (!memberTypePrice) {
+      alert('El miembro no tiene un tipo de membresía asignado')
+      return
+    }
 
     // Calcular el amount de cada mes basado en si está bonificado o no
     const monthsWithAmounts = data.months.map(month => ({
@@ -154,7 +183,7 @@ export const MemberPaymentsPage: React.FC = () => {
     createMemberPayment({
       variables: {
         input: {
-          memberId: memberData.memberByDni.id,
+          memberId: member.id,
           paymentMethodId: data.paymentMethodId,
           months: monthsWithAmounts
         }
@@ -188,30 +217,74 @@ export const MemberPaymentsPage: React.FC = () => {
       </div>
 
       <div className="member-payment-container">
-        {loadingMember ? (
-          <div className="loading-state">Cargando información del miembro...</div>
-        ) : memberData?.memberByDni ? (
+        {/* Autocomplete Search */}
+        <div className="search-section">
+          <h3>Buscar Miembro</h3>
+          <MemberAutocomplete
+            onSelect={setCurrentMember}
+            selectedMember={currentMember}
+            placeholder="Buscar por nombre, apellido o DNI..."
+          />
+        </div>
+
+        {/* Display selected member info */}
+        {currentMember && (
           <div className="member-info-card">
-            <h3>Información del Miembro</h3>
+            <h3>Miembro Seleccionado</h3>
             <div className="member-info-grid">
               <div className="info-item">
                 <span className="info-label">Nombre:</span>
-                <span className="info-value">{memberData.memberByDni.firstName} {memberData.memberByDni.lastName}</span>
+                <span className="info-value">{currentMember.firstName} {currentMember.lastName}</span>
               </div>
               <div className="info-item">
                 <span className="info-label">DNI:</span>
-                <span className="info-value">{memberData.memberByDni.documentId}</span>
+                <span className="info-value">{currentMember.documentId}</span>
               </div>
-              <div className="info-item">
-                <span className="info-label">Tipo de Miembro:</span>
-                <span className="info-value">{memberData.memberByDni.memberType.name} (${memberData.memberByDni.memberType.price})</span>
-              </div>
+              {currentMember.memberNumber && (
+                <div className="info-item">
+                  <span className="info-label">Número de Socio:</span>
+                  <span className="info-value">#{currentMember.memberNumber}</span>
+                </div>
+              )}
+              {currentMember.memberType && (
+                <div className="info-item">
+                  <span className="info-label">Tipo de Miembro:</span>
+                  <span className="info-value">{currentMember.memberType.name} (${currentMember.memberType.price})</span>
+                </div>
+              )}
             </div>
           </div>
-        ) : dniParam ? (
-          <div className="error-state">No se encontró un miembro con el DNI: {dniParam}</div>
-        ) : (
-          <div className="info-state">Ingrese un DNI como parámetro en la URL (?dni=XXXXXX)</div>
+        )}
+
+        {/* Legacy DNI param support */}
+        {!currentMember && (
+          <>
+            {loadingMember ? (
+              <div className="loading-state">Cargando información del miembro...</div>
+            ) : memberData?.memberByDni ? (
+              <div className="member-info-card">
+                <h3>Información del Miembro</h3>
+                <div className="member-info-grid">
+                  <div className="info-item">
+                    <span className="info-label">Nombre:</span>
+                    <span className="info-value">{memberData.memberByDni.firstName} {memberData.memberByDni.lastName}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">DNI:</span>
+                    <span className="info-value">{memberData.memberByDni.documentId}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Tipo de Miembro:</span>
+                    <span className="info-value">{memberData.memberByDni.memberType.name} (${memberData.memberByDni.memberType.price})</span>
+                  </div>
+                </div>
+              </div>
+            ) : dniParam ? (
+              <div className="error-state">No se encontró un miembro con el DNI: {dniParam}</div>
+            ) : (
+              <div className="info-state">Busque y seleccione un miembro arriba para continuar</div>
+            )}
+          </>
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="member-payment-form">
@@ -351,7 +424,7 @@ export const MemberPaymentsPage: React.FC = () => {
             <button
               type="submit"
               className="btn-primary"
-              disabled={insertLoading || loadingTypes || !dniParam || !memberData?.memberByDni}
+              disabled={insertLoading || loadingTypes || (!currentMember && !memberData?.memberByDni)}
             >
               {insertLoading ? 'Guardando...' : 'Guardar'}
             </button>
@@ -367,6 +440,18 @@ export const MemberPaymentsPage: React.FC = () => {
           padding: 24px;
           border-radius: 8px;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-section {
+          margin-bottom: 24px;
+          padding-bottom: 24px;
+          border-bottom: 2px solid #e5e7eb;
+        }
+
+        .search-section h3 {
+          margin: 0 0 12px 0;
+          color: #1f2937;
+          font-size: 18px;
         }
 
         .member-payment-form {

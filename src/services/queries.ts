@@ -40,6 +40,11 @@ export const GET_MEMBERS = gql`
       user {
         email
       }
+      memberType {
+        id
+        name
+        price
+      }
       payments {
         year
         month

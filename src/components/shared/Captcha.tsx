@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 
 interface CaptchaProps {
   onVerify: (token: string) => void
@@ -18,7 +18,7 @@ export const Captcha: React.FC<CaptchaProps> = ({
   const [error, setError] = useState('')
 
   // Generar nueva pregunta matemática
-  const generateQuestion = () => {
+  const generateQuestion = useCallback(() => {
     const num1 = Math.floor(Math.random() * 20) + 1
     const num2 = Math.floor(Math.random() * 20) + 1
     const operations = ['+', '-', '*']
@@ -56,7 +56,7 @@ export const Captcha: React.FC<CaptchaProps> = ({
     setUserAnswer('')
     setError('')
     setIsVerified(false)
-  }
+  }, [setIsVerified])
 
   useEffect(() => {
     generateQuestion()

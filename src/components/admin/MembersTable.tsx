@@ -17,6 +17,11 @@ interface Member {
   documentType: string
   phoneArea: string
   phoneNumber: string
+  memberType?: {
+    id: string
+    name: string
+    price: number
+  }
   email?: string
   user?: {
     email: string
@@ -102,11 +107,11 @@ export const MembersTable: React.FC<MembersTableProps> = ({ members, loading, is
               <th>#</th>
               <th>N° Socio</th>
               <th>Apellido y Nombre</th>
-              <th>User</th>
+              <th>Tipo</th>
               <th>Documento</th>
               <th>Teléfono</th>
               {isLoggedIn && <th>Último Pago</th>}
-              {isLoggedIn && <th>Fecha Alta</th>}
+              {/* {isLoggedIn && <th>Fecha Alta</th>} */}
               {isLoggedIn && onEditMember && <th>Acciones</th>}
             </tr>
           </thead>
@@ -124,7 +129,7 @@ export const MembersTable: React.FC<MembersTableProps> = ({ members, loading, is
                     </div>
                   </td>
                   <td style={{ textAlign: 'center' }}>
-                    {member.user !== null && member.user !== undefined ? '✓' : ''}
+                    {member.memberType ? `${member.memberType.name} (${member.memberType.price.toFixed(2)})` : '-'}
                   </td>
                   <td>{member.documentId}</td>
                   <td>{member.phoneArea} {member.phoneNumber}</td>
@@ -139,7 +144,7 @@ export const MembersTable: React.FC<MembersTableProps> = ({ members, loading, is
                       )}
                     </td>
                   )}
-                  {isLoggedIn && <td>{formatDate(member.createdAt)}</td>}
+                  {/* {isLoggedIn && <td>{formatDate(member.createdAt)}</td>} */}
                   {isLoggedIn && onEditMember && (
                     <td>
                       <button

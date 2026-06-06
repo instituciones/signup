@@ -14,11 +14,12 @@ export const Captcha: React.FC<CaptchaProps> = ({
   const [question, setQuestion] = useState('')
   const [correctAnswer, setCorrectAnswer] = useState(0)
   const [userAnswer, setUserAnswer] = useState('')
-  const [isVerified, setIsVerified] = useState(false)
+  const [setIsVerified] = useState(false)
   const [error, setError] = useState('')
 
   // Generar nueva pregunta matemática
-  const generateQuestion = () => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const generateQuestion = useCallback(() => {
     const num1 = Math.floor(Math.random() * 20) + 1
     const num2 = Math.floor(Math.random() * 20) + 1
     const operations = ['+', '-', '*']
@@ -56,11 +57,11 @@ export const Captcha: React.FC<CaptchaProps> = ({
     setUserAnswer('')
     setError('')
     setIsVerified(false)
-  }
+  })
 
   useEffect(() => {
     generateQuestion()
-  }, [])
+  }, [generateQuestion])
 
   const handleSubmit = () => {
     const userNum = parseInt(userAnswer)

@@ -293,15 +293,15 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-input:checked + .slider {
+input:checked+.slider {
   background-color: #059669;
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
   transform: translateX(20px);
 }
 
-input:focus + .slider {
+input:focus+.slider {
   box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2);
 }
 
@@ -437,8 +437,13 @@ input:focus + .slider {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-spinner p {
@@ -1204,7 +1209,6 @@ input:focus + .slider {
   }
 
   .form-container {
-    max-height: calc(-webkit-fill-available - 15rem);
     max-height: calc(var(--vh, 1vh) * 100 - 15rem);
   }
 }

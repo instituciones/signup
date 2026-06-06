@@ -25,9 +25,9 @@ export const PaymentStep: React.FC<PaymentStepProps> = ({
     console.error('❌ INSTALLMENTS NO ES VÁLIDO EN PAYMENTSTEP:', formData.installments)
   }
 
-  const onSubmit = () => {
-    onFormSubmit && onFormSubmit()
-  }
+  // const onSubmit = () => {
+  //   onFormSubmit && onFormSubmit()
+  // }
 
   return (
     <div className="step-content">

@@ -92,7 +92,6 @@ interface MemberFromAutocomplete {
 }
 
 export const MemberPaymentsPage: React.FC = () => {
-  const { user } = useAuth()
   const institution = useInstitution()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()

@@ -1,5 +1,4 @@
 import React from 'react'
-import { MONTHS } from '../../types/constants'
 
 interface Payment {
   year: number
@@ -39,19 +38,19 @@ interface MembersTableProps {
 }
 
 export const MembersTable: React.FC<MembersTableProps> = ({ members, loading, isLoggedIn = false, onEditMember }) => {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-AR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    })
-  }
+  // const formatDate = (dateString: string) => {
+  //   return new Date(dateString).toLocaleDateString('es-AR', {
+  //     day: '2-digit',
+  //     month: '2-digit',
+  //     year: 'numeric'
+  //   })
+  // }
 
-  const openWhatsApp = (phoneArea: string, phoneNumber: string) => {
-    const fullNumber = `54${phoneArea}${phoneNumber}`
-    const whatsappUrl = `https://wa.me/${fullNumber}`
-    window.open(whatsappUrl, '_blank')
-  }
+  // const openWhatsApp = (phoneArea: string, phoneNumber: string) => {
+  //   const fullNumber = `54${phoneArea}${phoneNumber}`
+  //   const whatsappUrl = `https://wa.me/${fullNumber}`
+  //   window.open(whatsappUrl, '_blank')
+  // }
 
   const getLastPayment = (payments: Payment[]) => {
     if (!payments || payments.length === 0) return null

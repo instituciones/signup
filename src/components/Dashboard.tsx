@@ -3,7 +3,6 @@ import { FormData } from '../types/FormData'
 import { STEPS, PLANES } from '../types/constants'
 import { useFormValidation } from '../hooks/useFormValidation'
 import { useCloudinaryUpload } from '../hooks/useCloudinaryUpload'
-import { useRegistrationSubmit } from '../hooks/useRegistrationSubmit'
 import { useCreateProvisionalRecord } from '../hooks/useCreateProvisionalRecord'
 
 // Components
@@ -49,7 +48,7 @@ export default function Dashboard() {
   const { errors, validateStep, clearErrors } = useFormValidation()
   const { uploadToCloudinary, uploadProgress, isUploading } = useCloudinaryUpload()
   // const { isSubmitting, submitError, submitSuccess, submitRegistration } = useRegistrationSubmit()
-  const { isCreating, createError, provisionalRecord, createProvisionalRecord } = useCreateProvisionalRecord()
+  const { isCreating, createProvisionalRecord } = useCreateProvisionalRecord()
 
   // iOS viewport fix for keyboard issues
   useEffect(() => {
